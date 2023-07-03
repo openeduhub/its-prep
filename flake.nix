@@ -13,12 +13,12 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         # build the spaCy language processing pipeline as a python package
-        spacy-de-dep-news-trf = with pkgs.python3Packages;
+        de_dep_news_trf = with pkgs.python3Packages;
           buildPythonPackage rec {
-            pname = "spacy-de-dep-news-trf";
+            pname = "de_dep_news_trf";
             version = "3.5.0";
             src = pkgs.fetchzip {
-              url = "https://github.com/explosion/spacy-models/releases/download/de_dep_news_trf-${version}/de_dep_news_trf-${version}.tar.gz";
+              url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
               hash = "sha256-MleftGMj+VK8hAE+EOg0VhtFUg/oOH3grPbRzklyiVE=";
             };
             doCheck = false;
@@ -33,7 +33,7 @@
         python-packages-build = python-packages:
           with python-packages; [
             # NLP
-            spacy-de-dep-news-trf
+            de_dep_news_trf
             spacy
           ];
         python-build = pkgs.python3.withPackages python-packages-build;
