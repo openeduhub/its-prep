@@ -7,7 +7,7 @@ in a pre-processing pipeline.
 from collections.abc import Collection
 from typing import Protocol
 
-import spacy.tokens
+from spacy.tokens import Doc, Token
 
 import wloprep.utils as utils
 
@@ -19,7 +19,7 @@ class Filter(Protocol):
     Filter functions are composed to created pipelines.
     """
 
-    def __call__(self, doc: Collection[spacy.tokens.Token]) -> Collection[int]:
+    def __call__(self, doc: Doc) -> Collection[int]:
         """
         Given a document, return a Collection of indices to keep.
 
@@ -30,17 +30,12 @@ class Filter(Protocol):
 
 def apply_filters(
     filters: Collection[Filter],
-    *docs: Collection[spacy.tokens.Token],
-) -> Collection[Collection[spacy.tokens.Token]]:
+    *docs: Doc,
+) -> Collection[Collection[Token]]:
     """
     Iteratively apply the pipeline's Filter functions on the given documents,
     interpreting the collections of indices returned by the filters as
     tokens to keep.
-
-    To improve efficiency, each subsequent Filter function's results
-    are immediately used to subset the document and then pass that subset
-    onto the next filter.
-    Thus, the fastest and most impactful functions should be specified first.
 
     :param docs: The documents to process.
     :param filters: The sequency of Filter functions to apply,
@@ -49,14 +44,10 @@ def apply_filters(
     """
 
     def apply_on(
-        doc: Collection[spacy.tokens.Token],
-    ) -> Collection[spacy.tokens.Token]:
-        current_doc = doc
-        for fun in filters:
-            indices = fun(current_doc)
-            current_doc = utils.subset_by_index(current_doc, indices)
-
-        return current_doc
+        doc: Doc,
+    ) -> Collection[Token]:
+        indices = [fun(doc) for fun in filters]
+        return utils.subset_by_index(doc, *indices)
 
     return [apply_on(doc) for doc in docs]
 
@@ -68,7 +59,7 @@ def exclude(fun: Filter) -> Filter:
     :param fun: The original filter function to negate.
     """
 
-    def negated_fun(doc: Collection[spacy.tokens.Token]) -> Collection[int]:
+    def negated_fun(doc: Doc) -> Collection[int]:
         original_indices = set(range(len(doc)))
         ignored_indices = set(fun(doc))
 

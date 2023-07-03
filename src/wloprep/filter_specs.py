@@ -11,7 +11,7 @@ or as guidance for defining further filtering functions.
 
 from typing import Collection, Optional
 
-import spacy.tokens
+from spacy.tokens import Doc
 
 import wloprep.utils as utils
 from wloprep.filter import Filter
@@ -27,7 +27,7 @@ def get_filter_by_upos(upos_tags: Collection[str]) -> Filter:
     :param upos_tags: The collection of universal POS tags to look for.
     """
 
-    def filter_fun(doc: Collection[spacy.tokens.Token]) -> Collection[int]:
+    def filter_fun(doc: Doc) -> Collection[int]:
         return {index for index, token in enumerate(doc) if token.pos_ in upos_tags}
 
     return filter_fun
@@ -46,7 +46,7 @@ def get_filter_by_stop_words(
     """
     local_stop_words = additional_stop_words if additional_stop_words else set()
 
-    def filter_fun(doc: Collection[spacy.tokens.Token]) -> Collection[int]:
+    def filter_fun(doc: Doc) -> Collection[int]:
         return {
             index
             for index, token in enumerate(doc)
@@ -70,7 +70,7 @@ def get_filter_by_vocabulary(
     :param lemmatize: Whether to use lemmatized versions of the words.
     """
 
-    def filter_fun(doc: Collection[spacy.tokens.Token]) -> Collection[int]:
+    def filter_fun(doc: Doc) -> Collection[int]:
         return {
             index
             for index, token in enumerate(doc)
@@ -80,8 +80,8 @@ def get_filter_by_vocabulary(
     return filter_fun
 
 
-def get_filter_by_frequency_in_interval(
-    *docs: Collection[spacy.tokens.Token],
+def get_filter_by_frequency(
+    *docs: Doc,
     min_num: Optional[int] = None,
     max_num: Optional[int] = None,
     min_rate: Optional[float] = None,
@@ -123,3 +123,41 @@ def get_filter_by_frequency_in_interval(
     return get_filter_by_vocabulary(
         vocabulary=words_outside_interval, lemmatize=lemmatize
     )
+
+
+def get_filter_by_sent_len(
+    min_len: Optional[int] = None,
+    max_len: Optional[int] = None,
+    interval_open: bool = False,
+) -> Filter:
+    # helper functions to determine whether a length is in the interval
+    def right_of_min(count: int) -> bool:
+        if min_len is None:
+            return True
+
+        if interval_open:
+            return count < min_len
+        else:
+            return count <= min_len
+
+    def left_of_max(count: int) -> bool:
+        if max_len is None:
+            return True
+
+        if interval_open:
+            return count > max_len
+        else:
+            return count >= max_len
+
+    def in_interval(length: int) -> bool:
+        return right_of_min(length) and left_of_max(length)
+
+    def filter_fun(doc: Doc) -> Collection[int]:
+        return [
+            index
+            for sent in doc.sents
+            if in_interval(len(sent))
+            for index, _ in enumerate(sent)
+        ]
+
+    return filter_fun

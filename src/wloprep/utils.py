@@ -2,44 +2,25 @@
 This sub-module contains various utility functions used across this project,
 without necessarily belonging to any particular sub-module directly.
 """
-from collections.abc import Collection
-from typing import Any, Optional
+from collections.abc import Collection, Iterable
+from typing import Optional
 
-import spacy.tokens
+from spacy.tokens import Doc
 
 
-def subset_by_index(
-    col: Collection[Any], *index_cols: Collection[int]
-) -> Collection[Any]:
+def subset_by_index(it: Iterable, *index_cols: Collection[int]) -> Collection:
     """
-    Return the subset of the given collection by keeping only wanted indices.
+    Return the subset of the given iterable by keeping only wanted indices.
 
     I.e. ignore only entries with indices
     that are not inside any of the given index collections.
 
-    :param col: The collection to subset.
+    :param col: The iterable to subset.
     :param index_cols: The collections of indices to retain.
     """
     indices = set().union(*index_cols)
 
-    return [entry for index, entry in enumerate(col) if index in indices]
-
-
-# def exclude_by_index(
-#     doc: Collection[Any], *index_cols: Collection[int]
-# ) -> Collection[Any]:
-#     """
-#     Return the subset of the given collection by removing unwanted indices.
-
-#     I.e. retain only entries with indices
-#     that are not inside any of the given index collections.
-
-#     :param col: The collection to subset.
-#     :param index_cols: The collections of indices to ignore.
-#     """
-#     indices = set().union(*index_cols)
-
-#     return [entry for index, entry in enumerate(doc) if not index in indices]
+    return [entry for index, entry in enumerate(it) if index in indices]
 
 
 def get_document_freqs(docs: Collection[Collection[str]]) -> dict[str, int]:
@@ -60,7 +41,7 @@ def get_document_freqs(docs: Collection[Collection[str]]) -> dict[str, int]:
 
 
 def get_words_by_df_in_interval(
-    *docs: Collection[spacy.tokens.Token],
+    *docs: Doc,
     min_num: Optional[int] = None,
     max_num: Optional[int] = None,
     min_rate: Optional[float] = None,

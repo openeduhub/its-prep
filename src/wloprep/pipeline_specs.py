@@ -10,13 +10,13 @@ from collections.abc import Collection
 from typing import Any, Optional
 import wloprep.filter as filter
 import wloprep.filter_specs as filters
-import spacy.tokens
+from spacy.tokens import Doc
 
 
 def get_pipeline_generic_topic_modeling(
     ignored_upos_tags: Optional[Collection[str]] = None,
     ignored_lemmas: Optional[Collection[str]] = None,
-    docs: Optional[Collection[Collection[spacy.tokens.Token]]] = None,
+    docs: Optional[Collection[Doc]] = None,
     interval_spec: Optional[dict[str, Any]] = None,
 ) -> Collection[filter.Filter]:
     """
@@ -46,13 +46,13 @@ def get_pipeline_generic_topic_modeling(
         )
         if ignored_lemmas
         else identity,
-        filters.get_filter_by_frequency_in_interval(*docs, **interval_spec)
+        filters.get_filter_by_frequency(*docs, **interval_spec)
         if docs and interval_spec
         else identity,
     ]
 
 
-def get_pipeline_poc_topic_modeling(*docs: Collection[spacy.tokens.Token]):
+def get_pipeline_poc_topic_modeling(*docs: Doc):
     """The particular pipeline used for the PoC topic modeling application."""
     return get_pipeline_generic_topic_modeling(
         docs=docs,
