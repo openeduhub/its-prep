@@ -9,5 +9,5 @@ setup(
     install_requires=[
         d for d in open("requirements.txt").readlines() if not d.startswith("--")
     ],
-    package_dir={"": "src"},
+    package_dir={"": "."},
 )
