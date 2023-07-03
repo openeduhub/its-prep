@@ -7,31 +7,34 @@ in a pre-processing pipeline.
 from collections.abc import Collection
 from typing import Protocol
 
-from spacy.tokens import Doc, Token
-
 import wloprep.utils as utils
+
+# On the lowest level, represent documents as collections of tokens.
+# These tokens are considered the most atomic part of the document.
+Document = tuple[str]
 
 
 class Filter(Protocol):
     """
-    Functions that filter document contents in some way.
+    Functions that filter tokenized documents contents in some way.
 
     Filter functions are composed to created pipelines.
     """
 
-    def __call__(self, doc: Doc) -> Collection[int]:
+    def __call__(self, doc: Document) -> Collection[int]:
         """
-        Given a document, return a Collection of indices to keep.
+        Given a tokenized document,
+        return a Collection of token-indices to keep.
 
-        :param doc: The document to process.
+        :param doc: The tokenized document to process.
         """
         ...
 
 
 def apply_filters(
     filters: Collection[Filter],
-    *docs: Doc,
-) -> Collection[Collection[Token]]:
+    *docs: Document,
+) -> Collection[Collection[str]]:
     """
     Iteratively apply the pipeline's Filter functions on the given documents,
     interpreting the collections of indices returned by the filters as
@@ -43,11 +46,16 @@ def apply_filters(
                     to keep.
     """
 
+    def subset_by_index(doc: Document, *index_cols: Collection[int]) -> Collection:
+        indices = set().union(*index_cols)
+
+        return [token for index, token in enumerate(doc) if index in indices]
+
     def apply_on(
-        doc: Doc,
-    ) -> Collection[Token]:
+        doc: Document,
+    ) -> Collection[str]:
         indices = [fun(doc) for fun in filters]
-        return utils.subset_by_index(doc, *indices)
+        return subset_by_index(doc, *indices)
 
     return [apply_on(doc) for doc in docs]
 
@@ -59,7 +67,7 @@ def exclude(fun: Filter) -> Filter:
     :param fun: The original filter function to negate.
     """
 
-    def negated_fun(doc: Doc) -> Collection[int]:
+    def negated_fun(doc: Document) -> Collection[int]:
         original_indices = set(range(len(doc)))
         ignored_indices = set(fun(doc))
 
