@@ -8,8 +8,8 @@ filter.apply_filters function.
 """
 from collections.abc import Collection, Callable
 from typing import Any, Optional
-from wloprep.filter import Document
-import wloprep.filter as filter
+from wloprep.types import Document, Filter
+import wloprep.filter as filt
 import wloprep.filter_specs as filters
 
 
@@ -21,7 +21,7 @@ def get_pipeline_generic_topic_modeling(
     get_upos_fun: Optional[Callable[[Document], Collection[str]]] = None,
     is_stop_fun: Optional[Callable[[Document], Collection[bool]]] = None,
     lemmatize_fun: Optional[Callable[[Document], Collection[str]]] = None,
-) -> Collection[filter.Filter]:
+) -> Collection[Filter]:
     """
     Pipeline of filter functions used during pre-processing for topic modeling.
 
@@ -30,37 +30,27 @@ def get_pipeline_generic_topic_modeling(
     3. Filter out unwanted lemmas.
     4. Filter out very rare and very frequent words.
 
-    :param ignored_upos_tags: Universal POS tags to remove.
-    :param ignored_lemmas: Lemmas to remove.
-    :param docs: The document corpus to use to calculate document frequencies.
-                 Used when filtering out rare and frequent words.
     :param interval_spec: Specification of the document frequency interval
                           that tokens must fall into. See documentation of
                           filter_specs.get_filter_by_frequency_in_interval
     """
-    index_identity = lambda doc: set(range(len(doc)))
+    index_identity = lambda doc: frozenset(range(len(doc)))
+    # if no lemmatize function was given, simply use the tokens as-is
     lemmatize_fun = lemmatize_fun if lemmatize_fun else lambda doc: doc
     return [
         # filter by upos tags
-        filter.exclude(
-            filters.get_filter_by_upos(get_upos_fun, upos_tags=ignored_upos_tags)
-        )
+        filt.exclude(filters.get_filter_by_property(get_upos_fun, ignored_upos_tags))
         if ignored_upos_tags and get_upos_fun
         else index_identity,
         # filter by stop words
-        filter.exclude(filters.get_filter_by_stop_words(is_stop_fun))
+        filt.exclude(filters.get_filter_by_boolean_fun(is_stop_fun))
         if is_stop_fun
         else index_identity,
         # filter by ignored lemmas
-        filter.exclude(
-            filters.get_filter_by_vocabulary(
-                lemmatize_fun,
-                vocabulary=ignored_lemmas,
-            )
-        )
+        filt.exclude(filters.get_filter_by_property(lemmatize_fun, ignored_lemmas))
         if ignored_lemmas
         else index_identity,
-        # filter by document frequency
+        # filter by document frequency of lemmatized tokens
         filters.get_filter_by_frequency(docs, lemmatize_fun, **interval_spec)
         if docs and interval_spec
         else index_identity,

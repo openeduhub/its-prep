@@ -5,34 +5,12 @@ Filtering functions represent the individual steps taken
 in a pre-processing pipeline.
 """
 from collections.abc import Collection
-from typing import Protocol
-
-
-# On the lowest level, represent documents as collections of tokens.
-# These tokens are considered the most atomic part of the document.
-Document = tuple[str]
-
-
-class Filter(Protocol):
-    """
-    Functions that filter tokenized documents contents in some way.
-
-    Filter functions are composed to created pipelines.
-    """
-
-    def __call__(self, doc: Document) -> Collection[int]:
-        """
-        Given a tokenized document,
-        return a Collection of token-indices to keep.
-
-        :param doc: The tokenized document to process.
-        """
-        ...
+from wloprep.types import Document, Filter
 
 
 def apply_filters(
-    filters: Collection[Filter],
     *docs: Document,
+    filters: Collection[Filter],
 ) -> Collection[Collection[str]]:
     """
     Iteratively apply the pipeline's Filter functions on the given documents,
@@ -66,9 +44,9 @@ def exclude(fun: Filter) -> Filter:
     :param fun: The original filter function to negate.
     """
 
-    def negated_fun(doc: Document) -> Collection[int]:
-        original_indices = set(range(len(doc)))
-        ignored_indices = set(fun(doc))
+    def negated_fun(doc: Document) -> frozenset[int]:
+        original_indices = frozenset(range(len(doc)))
+        ignored_indices = fun(doc)
 
         return original_indices - ignored_indices
 

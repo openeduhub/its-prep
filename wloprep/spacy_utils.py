@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from wloprep.filter import Document
+from wloprep.types import Document
 import spacy.tokens
 import de_dep_news_trf
 
