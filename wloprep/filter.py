@@ -7,7 +7,6 @@ in a pre-processing pipeline.
 from collections.abc import Collection
 from typing import Protocol
 
-import wloprep.utils as utils
 
 # On the lowest level, represent documents as collections of tokens.
 # These tokens are considered the most atomic part of the document.
