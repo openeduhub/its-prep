@@ -7,3 +7,5 @@
 **/ltximg/*
 *\~
 **/__pycache__
+/.coverage
+/.hypothesis/

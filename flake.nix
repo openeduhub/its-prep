@@ -29,7 +29,7 @@
           };
 
 
-        # declare the python packages used for building & developing
+        # declare the python packages used for building, testing & developing
         python-packages-build = python-packages:
           with python-packages; [
             # NLP
@@ -38,14 +38,25 @@
           ];
         python-build = pkgs.python3.withPackages python-packages-build;
 
+        python-packages-test = python-packages:
+          with python-packages; [
+            # type checking
+            mypy
+            # unit testing
+            pytest
+            pytest-cov
+            hypothesis
+          ] ++ (python-packages-build python-packages);
+        python-test = pkgs.python3.withPackages python-packages-build;
 
         python-packages-devel = python-packages:
           with python-packages; [
+            # coding utilities
             black
-            pyflakes
+            flake8
             isort
             ipython
-          ] ++ (python-packages-build python-packages);
+          ] ++ (python-packages-test python-packages);
         python-devel = pkgs.python3.withPackages python-packages-devel;
 
         # declare how the python package shall be built
