@@ -10,16 +10,17 @@ or as guidance for defining further filtering functions.
 """
 
 from collections.abc import Callable, Collection
-from typing import Any, Optional
-
-from wloprep.types import Filter, Document
+from typing import Any, Optional, Set, TypeVar
 
 import numpy as np
+from wloprep.types import Document, Filter, Filter_Result
+
+T = TypeVar("T")
 
 
 def get_filter_by_property(
-    property_fun: Callable[[Document], Collection[Any]],
-    req_properties: Collection[Any],
+    property_fun: Callable[[Document], Collection[T]],
+    req_properties: Collection[T],
 ) -> Filter:
     """
     A filter that gets tokens based on an arbitrary property.
@@ -29,11 +30,11 @@ def get_filter_by_property(
 
     :param property_fun: The function to use to analyze the document,
                          obtaining the property to check for.
-    :param req_properties: The collection of required properties
+    :param req_properties: The collection of required properties.
     """
 
-    def filter_fun(doc: Document) -> frozenset[int]:
-        return frozenset(
+    def filter_fun(doc: Document) -> Filter_Result:
+        return Filter_Result(
             index
             for index, prop in enumerate(property_fun(doc))
             if prop in req_properties
@@ -53,8 +54,8 @@ def get_filter_by_boolean_fun(
     :param bool_fun: The function to use to analyze the document.
     """
 
-    def filter_fun(doc: Document) -> frozenset[int]:
-        return frozenset(
+    def filter_fun(doc: Document) -> Filter_Result:
+        return Filter_Result(
             index for index, is_true in enumerate(bool_fun(doc)) if is_true
         )
 
@@ -63,7 +64,7 @@ def get_filter_by_boolean_fun(
 
 def __in_interval(
     x: float, lower: Optional[float], upper: Optional[float], interval_open: bool
-):
+) -> bool:
     lower = lower if lower is not None else -np.inf
     upper = upper if upper is not None else np.inf
 
@@ -73,15 +74,15 @@ def __in_interval(
     return lower <= x <= upper
 
 
-def get_words_by_property_frequency(
+def get_props_by_document_frequency(
     docs: Collection[Document],
-    property_fun: Callable[[Document], Collection[str]],
+    property_fun: Callable[[Document], Collection[T]],
     min_num: Optional[float] = None,
     max_num: Optional[float] = None,
     min_rate: Optional[float] = None,
     max_rate: Optional[float] = None,
     interval_open: bool = False,
-) -> Collection[str]:
+) -> Set[T]:
     """
     Return the words where the corresponding property
     has a document frequency within the given interval.
@@ -105,7 +106,7 @@ def get_words_by_property_frequency(
         max_num = len(docs) * max_rate
 
     # helper function to compute document frequencies
-    def get_document_freqs() -> dict[str, int]:
+    def get_document_freqs() -> dict[T, int]:
         docs_as_sets = [{prop for prop in property_fun(doc)} for doc in docs]
         vocabulary = set().union(*docs_as_sets)
         return {
@@ -123,7 +124,7 @@ def get_words_by_property_frequency(
 
 def get_filter_by_frequency(
     docs: Collection[Document],
-    property_fun: Callable[[Document], Collection[str]],
+    property_fun: Callable[[Document], Collection[T]],
     min_num: Optional[int] = None,
     max_num: Optional[int] = None,
     min_rate: Optional[float] = None,
@@ -139,7 +140,7 @@ def get_filter_by_frequency(
 
     See get_words_by_property_frequency for more details.
     """
-    props_inside_interval = get_words_by_property_frequency(
+    props_inside_interval = get_props_by_document_frequency(
         property_fun=property_fun,
         docs=docs,
         min_num=min_num,
@@ -155,7 +156,7 @@ def get_filter_by_frequency(
 
 
 def get_filter_by_subset_len(
-    subset_fun: Callable[[Document], Collection[Collection]],
+    subset_fun: Callable[[Document], Collection[Collection[Any]]],
     min_len: Optional[int] = None,
     max_len: Optional[int] = None,
     interval_open: bool = False,
@@ -169,9 +170,9 @@ def get_filter_by_subset_len(
                        into a collection of subsets.
     """
 
-    def filter_fun(doc: Document) -> frozenset[int]:
+    def filter_fun(doc: Document) -> Filter_Result:
         len_by_token = [len(col) for col in subset_fun(doc) for _ in col]
-        return frozenset(
+        return Filter_Result(
             index
             for index, length in enumerate(len_by_token)
             if __in_interval(length, min_len, max_len, interval_open)

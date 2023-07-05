@@ -1,17 +1,19 @@
 import test.strategies as wlo_st
 from collections.abc import Callable, Collection
-from typing import Any
+from typing import TypeVar
 
 import hypothesis.strategies as st
-import wloprep.filter as filt
 from hypothesis import given
+from wloprep.core import apply_filters, negated
 from wloprep.types import Document, Filter
 
+T = TypeVar("T")
 
-def nest(fun: Callable[[Any], Any], n: int):
+
+def _nest(fun: Callable[[T], T], n: int) -> Callable[[T], T]:
     """Helper function to apply a function onto itself n times."""
 
-    def nested_fun(x):
+    def nested_fun(x: T) -> T:
         for _ in range(n):
             x = fun(x)
 
@@ -21,13 +23,13 @@ def nest(fun: Callable[[Any], Any], n: int):
 
 
 @given(wlo_st.documents_with_filters(), st.integers(min_value=1, max_value=3))
-def test_exclude_does_negate(
+def test_negate_does_negate(
     given_input: tuple[Document, Filter, frozenset[int]], negation_count: int
 ):
     doc, filter_fun, include_indices = given_input
 
     # negate the filter an odd amount of times
-    negated_filter = nest(filt.exclude, negation_count * 2 - 1)(filter_fun)
+    negated_filter = _nest(negated, negation_count * 2 - 1)(filter_fun)
 
     doc_indices = set(range(len(doc)))
     exclude_indices = set(negated_filter(doc))
@@ -38,13 +40,13 @@ def test_exclude_does_negate(
 
 
 @given(wlo_st.documents_with_filters(), st.integers(min_value=1, max_value=3))
-def test_exclude_double_negation(
+def test_negate_double_negation(
     given_input: tuple[Document, Filter, frozenset[int]], negation_count: int
 ):
     doc, filter_fun, index_set = given_input
 
     # negate the filter an even amount of times
-    negated_filter = nest(filt.exclude, negation_count * 2)(filter_fun)
+    negated_filter = _nest(negated, negation_count * 2)(filter_fun)
 
     assert index_set == negated_filter(doc)
 
@@ -55,16 +57,12 @@ def test_apply_filters(
 ):
     doc, filter_funs, index_sets = given_input
 
-    results = filt.apply_filters(doc, filters=filter_funs)
+    results = apply_filters(doc, unsafe_filters=filter_funs)
 
     collected_indices = set().union(*index_sets)
     expected_results = [
-        [token for index, token in enumerate(doc) if index in collected_indices]
+        Document(token for index, token in enumerate(doc) if index in collected_indices)
     ]
 
     for result, expected_result in zip(results, expected_results):
-        for token in expected_result:
-            assert token in result
-
-        for token in result:
-            assert token in expected_result
+        assert result == expected_result

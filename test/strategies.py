@@ -1,23 +1,23 @@
-from typing import Any, Collection
-from wloprep.types import Document, Filter
+from collections.abc import Collection
+from wloprep.types import Document, Filter, Filter_Result
 import hypothesis.strategies as st
 
 
 @st.composite
 def documents(draw, vocabulary=st.integers(), max_doc_size: int = 100) -> Document:
     doc_as_list = draw(st.lists(vocabulary, max_size=max_doc_size))
-    doc = tuple(str(token) for token in doc_as_list)
+    doc = Document(str(token) for token in doc_as_list)
     return doc
 
 
 @st.composite
-def filters(draw, doc: Document) -> tuple[Filter, frozenset[int]]:
+def filters(draw, doc: Document) -> tuple[Filter, Filter_Result]:
     """Return a filter function with a valid result on the given document."""
     doc_size = len(doc)
 
     # document is empty
     if not doc_size:
-        return lambda doc: frozenset(), frozenset()
+        return lambda doc: Filter_Result(), Filter_Result()
 
     filter_fun = draw(
         st.functions(
@@ -33,7 +33,7 @@ def filters(draw, doc: Document) -> tuple[Filter, frozenset[int]]:
 @st.composite
 def documents_with_filters(
     draw, vocabulary=st.integers(), max_doc_size: int = 100
-) -> tuple[Document, Filter, frozenset[int]]:
+) -> tuple[Document, Filter, Filter_Result]:
     doc = draw(documents(vocabulary=vocabulary, max_doc_size=max_doc_size))
 
     filter_fun, result = draw(filters(doc))
@@ -44,7 +44,7 @@ def documents_with_filters(
 @st.composite
 def documents_with_multiple_filters(
     draw, vocabulary=st.integers(), max_doc_size: int = 100
-) -> tuple[Document, Collection[Filter], Collection[frozenset[int]]]:
+) -> tuple[Document, Collection[Filter], Collection[Filter_Result]]:
     doc = draw(documents(vocabulary=vocabulary, max_doc_size=max_doc_size))
     filter_tuples = draw(st.lists(filters(doc)))
 

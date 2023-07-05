@@ -2,7 +2,7 @@ import test.strategies as wlo_st
 from typing import Collection
 
 import hypothesis.strategies as st
-import wloprep.filter_specs as filters
+import wloprep.specs.filters as filters
 from hypothesis import given
 from wloprep.types import Document
 
@@ -17,7 +17,7 @@ def test_get_words_by_df_in_interval_with_both_nums(
 ):
     min_num, max_num = interval
 
-    result = filters.get_words_by_property_frequency(
+    result = filters.get_props_by_document_frequency(
         docs,
         property_fun=lambda doc: doc,
         min_num=min_num,
@@ -46,7 +46,7 @@ def test_get_words_by_df_in_interval_with_both_nums(
 def test_get_words_by_df_in_interval_with_min_num(
     docs: Collection[Document], min_num, interval_open: bool
 ):
-    result = filters.get_words_by_property_frequency(
+    result = filters.get_props_by_document_frequency(
         docs,
         property_fun=lambda doc: doc,
         min_num=min_num,
@@ -74,7 +74,7 @@ def test_get_words_by_df_in_interval_with_min_num(
 def test_get_words_by_df_in_interval_with_max_num(
     docs: Collection[Document], max_num, interval_open: bool
 ):
-    result = filters.get_words_by_property_frequency(
+    result = filters.get_props_by_document_frequency(
         docs,
         property_fun=lambda doc: doc,
         max_num=max_num,
@@ -107,7 +107,7 @@ def test_get_words_by_df_in_interval_with_both_rates(
     min_rate, max_rate = interval
     min_num, max_num = tuple(len(docs) * rate for rate in interval)
 
-    result = filters.get_words_by_property_frequency(
+    result = filters.get_props_by_document_frequency(
         docs,
         property_fun=lambda doc: doc,
         min_rate=min_rate,
