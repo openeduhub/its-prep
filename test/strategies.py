@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from wloprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter, Filter_Result
 import hypothesis.strategies as st
 
 

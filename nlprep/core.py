@@ -5,7 +5,7 @@ like applying or negating filters.
 from collections.abc import Collection, Iterator
 from typing import Optional
 
-from wloprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter, Filter_Result
 
 
 def apply_filters(

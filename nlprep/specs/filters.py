@@ -13,7 +13,7 @@ from collections.abc import Callable, Collection
 from typing import Any, Optional, Set, TypeVar
 
 import numpy as np
-from wloprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter, Filter_Result
 
 T = TypeVar("T")
 

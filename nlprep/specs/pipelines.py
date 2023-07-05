@@ -8,11 +8,11 @@ filter.apply_filters function.
 """
 from collections.abc import Collection, Callable
 from typing import Any
-from wloprep.types import Document, Filter
-from wloprep.core import negated
-import wloprep.specs.filters as filters
-import wloprep.specs.collections as cols
-import wloprep.spacy.props as spacy_props
+from nlprep.types import Document, Filter
+from nlprep.core import negated
+import nlprep.specs.filters as filters
+import nlprep.specs.collections as cols
+import nlprep.spacy.props as spacy_props
 
 
 def get_pipeline_generic_topic_modeling(

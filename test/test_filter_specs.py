@@ -2,9 +2,9 @@ import test.strategies as wlo_st
 from typing import Collection
 
 import hypothesis.strategies as st
-import wloprep.specs.filters as filters
+import nlprep.specs.filters as filters
 from hypothesis import given
-from wloprep.types import Document
+from nlprep.types import Document
 
 
 @given(

@@ -13,7 +13,7 @@ they will actually act on the internal Document representation.
 """
 from collections.abc import Collection, Callable
 from typing import TypeVar
-from wloprep.types import Document
+from nlprep.types import Document
 import spacy.tokens
 import de_dep_news_trf
 

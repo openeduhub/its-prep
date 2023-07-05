@@ -4,8 +4,8 @@ from typing import TypeVar
 
 import hypothesis.strategies as st
 from hypothesis import given
-from wloprep.core import apply_filters, negated
-from wloprep.types import Document, Filter
+from nlprep.core import apply_filters, negated
+from nlprep.types import Document, Filter
 
 T = TypeVar("T")
 
