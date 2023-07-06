@@ -60,17 +60,18 @@
         python-devel = pkgs.python3.withPackages python-packages-devel;
 
         # declare how the python package shall be built
-        text_preprocessing = python-build.pkgs.buildPythonPackage {
-          pname = "text_preprocessing";
+        nlprep = python-build.pkgs.buildPythonPackage {
+          pname = "nlprep";
           version = "0.0.1";
 
           propagatedBuildInputs = (python-packages-build python-build.pkgs);
+          nativeCheckInputs = (python-packages-test python-test.pkgs);
 
           src = ./.;
         };
 
       in {
-        defaultPackage = text_preprocessing;
+        defaultPackage = nlprep;
         devShell = pkgs.mkShell {
           buildInputs = [
             python-devel
