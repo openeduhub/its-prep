@@ -3,7 +3,7 @@
 
 * Utils :noexport:
 :PROPERTIES:
-:HEADER-ARGS: :exports no :session nlprep-demo
+:HEADER-ARGS: :exports both :session nlprep-demo
 :END:
 #+name: print-results
 #+begin_src python :var results=[] :results replace output
@@ -81,7 +81,7 @@ only_verbs_pipeline = [filters.get_filter_by_property(nlp.get_upos, {"VERB"})]
 #+end_src
 
 We can apply the filters from our pipeline using the =apply_filters= function
-#+begin_src python :post print-results(results=*this*) :results replace value
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
 from nlprep.core import apply_filters
 
 list(apply_filters(tokenized_docs, only_verbs_pipeline))
