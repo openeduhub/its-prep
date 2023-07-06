@@ -18,6 +18,22 @@ from nlprep.types import Document, Filter, Filter_Result
 T = TypeVar("T")
 
 
+def negated(fun: Filter) -> Filter:
+    """
+    Return a new filter function that returns the negated index collection.
+
+    :param fun: The original filter function to negate.
+    """
+
+    def negated_fun(doc: Document) -> Filter_Result:
+        original_indices = Filter_Result(range(len(doc)))
+        ignored_indices = fun(doc)
+
+        return original_indices - ignored_indices
+
+    return negated_fun
+
+
 def get_filter_by_property(
     property_fun: Callable[[Document], Collection[T]],
     req_properties: Collection[T],
@@ -43,9 +59,7 @@ def get_filter_by_property(
     return filter_fun
 
 
-def get_filter_by_boolean_fun(
-    bool_fun: Callable[[Document], Collection[bool]]
-) -> Filter:
+def get_filter_by_bool_fun(bool_fun: Callable[[Document], Collection[bool]]) -> Filter:
     """
     Return a filter that returns the tokens that are considered True.
 

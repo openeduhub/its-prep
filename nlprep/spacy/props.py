@@ -23,6 +23,24 @@ DOCUMENT_CACHE: dict[tuple[str], spacy.tokens.Doc] = dict()
 T = TypeVar("T")
 
 
+def _raw_into_property(raw_doc: str, prop: str) -> Document:
+    processed_doc = nlp(raw_doc)
+    doc = Document(getattr(token, prop) for token in processed_doc)
+
+    # cache the processed document for later use
+    DOCUMENT_CACHE[doc] = processed_doc
+
+    return doc
+
+
+def raw_into_words(raw_doc: str) -> Document:
+    return _raw_into_property(raw_doc, "text")
+
+
+def raw_into_lemmas(raw_doc: str) -> Document:
+    return _raw_into_property(raw_doc, "lemma_")
+
+
 def from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     """
     Transform functions that act on processed spaCy documents

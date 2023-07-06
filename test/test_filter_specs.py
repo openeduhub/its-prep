@@ -1,10 +1,59 @@
 import test.strategies as wlo_st
-from typing import Collection
+from collections.abc import Collection, Callable
+from typing import TypeVar
 
 import hypothesis.strategies as st
 import nlprep.specs.filters as filters
 from hypothesis import given
-from nlprep.types import Document
+from nlprep.types import Document, Filter, Filter_Result
+
+T = TypeVar("T")
+
+
+def _nest(fun: Callable[[T], T], n: int) -> Callable[[T], T]:
+    """Helper function to apply a function onto itself n times."""
+
+    def nested_fun(x: T) -> T:
+        for _ in range(n):
+            x = fun(x)
+
+        return x
+
+    return nested_fun
+
+
+@given(wlo_st.documents_with_filters(), st.integers(min_value=1, max_value=3))
+def test_negate_does_negate(
+    given_input: tuple[Document, Filter, Filter_Result], negation_count: int
+):
+    """
+    Ensure that the negated filter actually represents the complement
+    of the original filter's result
+    """
+    doc, filter_fun, include_indices = given_input
+    # negate the filter an odd number of times
+    negated_filter = _nest(filters.negated, negation_count * 2 - 1)(filter_fun)
+
+    doc_indices = set(range(len(doc)))
+    exclude_indices = set(negated_filter(doc))
+
+    assert set() == include_indices.intersection(exclude_indices)
+    assert doc_indices == include_indices.union(exclude_indices)
+
+
+@given(wlo_st.documents_with_filters(), st.integers(min_value=1, max_value=3))
+def test_negate_double_negation(
+    given_input: tuple[Document, Filter, Filter_Result], negation_count: int
+):
+    """
+    Ensure that negating a filter an even number of times
+    does not affect its result.
+    """
+    doc, filter_fun, index_set = given_input
+    # negate the filter an even number of times
+    negated_filter = _nest(filters.negated, negation_count * 2)(filter_fun)
+
+    assert index_set == negated_filter(doc)
 
 
 @given(

@@ -45,6 +45,9 @@ def documents_with_filters(
 def documents_with_multiple_filters(
     draw, vocabulary=st.integers(), max_doc_size: int = 100
 ) -> tuple[Document, Collection[Filter], Collection[Filter_Result]]:
+    """
+    Draw multiple filters that can be applied at the same time to the document.
+    """
     doc = draw(documents(vocabulary=vocabulary, max_doc_size=max_doc_size))
     filter_tuples = draw(st.lists(filters(doc)))
 
@@ -53,3 +56,26 @@ def documents_with_multiple_filters(
     )
 
     return doc, filter_funs, results
+
+
+@st.composite
+def documents_with_chained_filters(
+    draw, vocabulary=st.integers(), max_doc_size: int = 100
+) -> tuple[Document, Collection[Filter], Collection[Filter_Result]]:
+    """
+    Draw multiple filters that were applied in order to the document.
+    """
+    doc = draw(documents(vocabulary=vocabulary, max_doc_size=max_doc_size))
+    filter_num = draw(st.integers(min_value=0, max_value=10))
+    doc_filtered = doc
+    filter_funs = []
+    filter_results = []
+    for _ in range(filter_num):
+        filter_fun, filter_result = draw(filters(doc_filtered))
+        doc_filtered = Document(
+            token for index, token in enumerate(doc_filtered) if index in filter_result
+        )
+        filter_funs.append(filter_fun)
+        filter_results.append(filter_result)
+
+    return doc, filter_funs, filter_results

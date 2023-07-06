@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Collection, Protocol
 
 
 # On the lowest level, represent documents as tuples of tokens.
@@ -24,4 +24,28 @@ class Filter(Protocol):
 
         :param doc: The tokenized document to process.
         """
+        ...
+
+
+Pipeline = Collection[Filter]
+
+
+class Pipeline_Generator(Protocol):
+    """
+    Functions that generate pre-processing pipeline, given a document corpus.
+
+    The reason why we supply the document corpus here is because some filters
+    may require an initial analysis of all documents,
+    e.g. in order to filter by the document frequency of lemmatized tokens.
+
+    :return: A tuple of collections of first unsafe, then safe filters.
+             Unsafe filters need the document to be processed to be 'intact',
+             e.g. in order to contextualize tokens or to process sentences.
+             Safe filters are perfectly valid to apply on documents
+             that have already been filtered.
+    """
+
+    def __call__(
+        self, docs: Collection[Document], **kwargs
+    ) -> tuple[Pipeline, Pipeline]:
         ...

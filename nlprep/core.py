@@ -2,21 +2,23 @@
 This sub-module defines core functionality,
 like applying or negating filters.
 """
-from collections.abc import Collection, Iterator
-from typing import Optional
+from collections.abc import Callable, Collection, Iterable, Iterator
 
-from nlprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter, Filter_Result, Pipeline, Pipeline_Generator
 
 
 def apply_filters(
-    *docs: Document,
-    safe_filters: Optional[Collection[Filter]] = None,
-    unsafe_filters: Optional[Collection[Filter]] = None,
+    docs: Iterable[Document],
+    unsafe_filters: Pipeline = tuple(),
+    safe_filters: Pipeline = tuple(),
 ) -> Iterator[Document]:
     """
     Iteratively apply the pipeline's Filter functions on the given documents,
     interpreting the collections of indices returned by the filters as
-    tokens to keep.
+    tokens to possibly keep.
+    Tokens with index not inside a filter's result will be discarded.
+
+    If no filters were given, the documents are returned as-is.
 
     :param docs: The documents to process.
     :param unsafe_filters: Filters that require the document to be 'intact',
@@ -27,22 +29,23 @@ def apply_filters(
                          This includes filters that only act on individual
                          tokens, without requiring any context.
     """
-    safe_filters = safe_filters if safe_filters else []
-    unsafe_filters = unsafe_filters if unsafe_filters else []
 
-    def subset_by_index(doc: Document, *index_cols: Filter_Result) -> Document:
-        indices = set().union(*index_cols)
+    def subset_by_index(doc: Document, *index_sets: Filter_Result) -> Document:
+        indices = frozenset.intersection(*index_sets)
 
         return Document(token for index, token in enumerate(doc) if index in indices)
 
-    def apply_unsafe(doc: Document, filters: Collection[Filter]) -> Document:
+    def apply_unsafe(doc: Document, *filters: Filter) -> Document:
         """
         Apply all unsafe filters on the original document.
         """
+        if len(filters) == 0:
+            return doc
+
         index_sets = [fun(doc) for fun in filters]
         return subset_by_index(doc, *index_sets)
 
-    def apply_safe(doc: Document, filters: Collection[Filter]) -> Document:
+    def apply_safe(doc: Document, *filters: Filter) -> Document:
         """
         Apply each safe filter on the previously filtered document.
 
@@ -56,20 +59,24 @@ def apply_filters(
         return doc
 
     for doc in docs:
-        yield apply_safe(apply_unsafe(doc, unsafe_filters), safe_filters)
+        yield apply_safe(apply_unsafe(doc, *unsafe_filters), *safe_filters)
 
 
-def negated(fun: Filter) -> Filter:
+def apply_pipeline(
+    raw_docs: Iterable[str],
+    get_pipeline_fun: Pipeline_Generator,
+    tokenize_fun: Callable[[str], Document],
+    **kwargs,
+) -> Iterable[Document]:
     """
-    Return a new filter function that returns the negated index collection.
+    Directly apply the chosen pipeline on completely unprocessed documents.
 
-    :param fun: The original filter function to negate.
+    Usually, it would be necessary to tokenize the documents first,
+    however, this is done automatically using the given tokenize_fun.
+
+    :args kwargs: Additional keyword arguments passed onto the pipeline
+                  generator function.
     """
-
-    def negated_fun(doc: Document) -> Filter_Result:
-        original_indices = Filter_Result(range(len(doc)))
-        ignored_indices = fun(doc)
-
-        return original_indices - ignored_indices
-
-    return negated_fun
+    docs = [tokenize_fun(raw_doc) for raw_doc in raw_docs]
+    pipeline = get_pipeline_fun(docs, **kwargs)
+    return apply_filters(docs, *pipeline)
