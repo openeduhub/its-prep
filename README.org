@@ -3,7 +3,7 @@
 
 * Utils :noexport:
 :PROPERTIES:
-:HEADER-ARGS: :exports both :session nlprep-demo
+:HEADER-ARGS: :session nlprep-demo
 :END:
 #+name: print-results
 #+begin_src python :var results=[] :results replace output
@@ -13,7 +13,7 @@ for result in results:
 
 * Tutorial
 :PROPERTIES:
-:HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py :exports both
+:HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py
 :END:
 
 ** Data
@@ -43,7 +43,7 @@ Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract dat
 Since we are only dealing with two documents here, we adjust the required interval for the document frequency in the last step to be unbounded in both directions, thus skipping this step.
 
 In order to be able to apply a pipeline, we will additionally need to tokenize the documents in some way. The approach for this tokenization is defined through the =tokenize_fun=. Here, we tokenize by word, replacing the original words with lemmatized versions.
-#+begin_src python :post print-results(results=*this*) :results replace value
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
 list(
     apply_pipeline(
         raw_docs,
@@ -92,7 +92,7 @@ list(apply_filters(tokenized_docs, only_verbs_pipeline))
 : ['hat', 'zählt', 'liegt']
 
 Maybe we also want to filter out stop words, such as "hat". For this, we utilize =filters.negated=, which modifies a given filter function such that its results will be removed, rather than kept:
-#+begin_src python :post print-results(results=*this*) :results replace value
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
 non_stop_verbs_pipeline = only_verbs_pipeline + [
     filters.negated(filters.get_filter_by_bool_fun(nlp.is_stop))
 ]
@@ -105,7 +105,7 @@ list(apply_filters(tokenized_docs, non_stop_verbs_pipeline))
 : ['zählt', 'liegt']
 
 Finally, we could only include sentences that are at least 20 tokens long:
-#+begin_src python :post print-results(results=*this*) :results replace value
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
 long_sents_pipeline = [
     filters.get_filter_by_subset_len(nlp.into_sentences, min_len=20)
 ]
@@ -122,7 +122,7 @@ list(
 : ['Das', 'heutige', 'Deutschland', 'hat', 'circa', '84,4', 'Millionen', 'Einwohner', 'und', 'zählt', 'bei', 'einer', 'Fläche', 'von', '357.588', 'Quadratkilometern', 'mit', 'durchschnittlich', '236', 'Einwohnern', 'pro', 'Quadratkilometer', 'zu', 'den', 'dicht', 'besiedelten', 'Flächenstaaten', '.']
 
 And then only consider the non-stop verbs of those sentences:
-#+begin_src python :post print-results(results=*this*) :results replace value
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
 list(
     apply_filters(
         tokenized_docs,
