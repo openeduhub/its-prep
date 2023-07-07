@@ -2,7 +2,7 @@
 This sub-module defines core functionality,
 like applying or negating filters.
 """
-from collections.abc import Callable, Collection, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 
 from nlprep.types import Document, Filter, Filter_Result, Pipeline, Pipeline_Generator
 
