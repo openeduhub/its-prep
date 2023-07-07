@@ -1,11 +1,13 @@
-from typing import Any, Collection, Protocol
+from collections.abc import Collection
+from typing import Protocol
 
 
 # On the lowest level, represent documents as tuples of tokens.
 # These tokens are considered the most atomic part of the document.
 # We choose tuples, rather than generic collections, because
 # tuples are hashable and documents should not be mutable.
-Document = tuple[str]
+Document = tuple[str, ...]
+
 
 # The result of a filter is an immutable set of indices.
 Filter_Result = frozenset[int]

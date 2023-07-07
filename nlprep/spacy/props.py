@@ -18,7 +18,7 @@ import spacy.tokens
 import de_dep_news_trf
 
 nlp = de_dep_news_trf.load()
-DOCUMENT_CACHE: dict[tuple[str], spacy.tokens.Doc] = dict()
+DOCUMENT_CACHE: dict[Document, spacy.tokens.Doc] = dict()
 
 T = TypeVar("T")
 
