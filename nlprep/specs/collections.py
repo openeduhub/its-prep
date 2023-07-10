@@ -84,7 +84,7 @@ sources = {
     "Volksschule",
 }
 
-target_groups = {
+target_audiences = {
     "Schüler",
     "Schüler*in",
     "kindgerecht",

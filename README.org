@@ -1,7 +1,15 @@
 #+title: Natural Language Pre-Processing
 #+EXPORT_EXCLUDE_TAGS: noexport
+# Local Variables:
+# jinx-local-words: "Utils"
+# End:
 
-* Utils :noexport:
+* Tutorial
+:PROPERTIES:
+:HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py :kernel python3
+:END:
+
+** Utils :noexport:
 :PROPERTIES:
 :HEADER-ARGS: :session nlprep-demo
 :END:
@@ -11,10 +19,15 @@ for result in results:
     print(result)
 #+end_src
 
-* Tutorial
-:PROPERTIES:
-:HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py
-:END:
+#+RESULTS: print-results
+
+#+begin_src elisp :results silent :tangle no
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ (append org-babel-load-languages '((jupyter . t))))
+(org-babel-jupyter-override-src-block "python")
+(revert-buffer t t)
+#+end_src
 
 ** Data
 Some example texts, from [[https://de.wikipedia.org/wiki/Deutschland][the German Wikipedia page on Germany]].
@@ -25,13 +38,30 @@ raw_docs = [
 ]
 #+end_src
 
+In order to be able to process these text, we will first need to tokenize them in some way.
+This is necessary because all filters and pipelines essentially just decide which tokens to keep or discard.
+Note that as a corollary, this means that filters cannot modify or remove parts of tokens.
+
+Tokenize the documents using =spaCy=, displaying the tokens using their lemmatized form.
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
+import nlprep.spacy.props as nlp
+from nlprep.core import tokenize_documents
+
+docs = list(tokenize_documents(raw_docs, tokenize_fun=nlp.raw_into_lemmas))
+docs
+#+end_src
+
+#+RESULTS:
+: ['Deutschland', 'sein', 'ein', 'Bundesstaat', 'in', 'Mitteleuropa', '--', 'er', 'haben', '16', 'Bundesland', 'und', 'sein', 'als', 'freiheitlich-demokratisch', 'und', 'sozial', 'Rechtsstaat', 'verfassn', '--', 'der', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'der', 'jung', 'Ausprägung', 'der', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', '--', 'Bundeshauptstadt', 'und', 'Regierungssitz', 'sein', 'Berlin', '--', 'Deutschland', 'grenzen', 'an', 'neun', 'Staat', '--', 'es', 'haben', 'Anteil', 'an', 'der', 'Nord', 'und', 'Ostsee', 'in', 'Norden', 'sowie', 'der', 'Bodensee', 'und', 'der', 'Alpen', 'in', 'Süden', '--', 'es', 'liegen', 'in', 'der', 'gemäßigt', 'Klimazone', 'und', 'verfügen', 'über', '16', 'National', 'und', 'mehr', 'als', '100', 'Naturpark', '--']
+: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaat', '--', 'der', 'bevölkerungsreich', 'deutsch', 'Stadt', 'sein', 'Berlin', '--', 'weit', 'Metropole', 'mit', 'mehr', 'als', 'ein', 'Million', 'Einwohner', 'sein', 'Hamburg', '--', 'München', 'und', 'Köln', '--', 'der', 'groß', 'Ballungsraum', 'sein', 'der', 'Ruhrgebiet', '--', 'Frankfurt', 'an', 'Main', 'sein', 'als', 'europäisch', 'Finanzzentrum', 'von', 'global', 'Bedeutung', '--', 'der', 'Geburtenrate', 'liegen', 'bei', '1,58', 'Kind', 'pro', 'Frau', '--', '2021', '--', '--']
+
 ** Pre-Defined Pipelines
 A collection of common pipelines can be found in the =specs.pipelines= sub-module, and a collection of common NLP steps, implemented in [[https://spacy.io/][spaCy]], can be found in =spacy.props=.
-Additionally, we import =apply_pipelines=, which is a helper function that allows for easy application of pipelines onto unprocessed data.
+Additionally, we import =apply_filters=, which is a helper function that allows for easy application of pipelines onto unprocessed data.
 #+begin_src python
 import nlprep.specs.pipelines as pipelines
 import nlprep.spacy.props as nlp
-from nlprep.core import apply_pipeline
+from nlprep.core import apply_filters
 #+end_src
 
 Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract data that is relevant to the semantic context of the given document. This is done by
@@ -41,34 +71,17 @@ Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract dat
 4. filtering out particularly rare or frequent lemmatized tokens
 
 Since we are only dealing with two documents here, we adjust the required interval for the document frequency in the last step to be unbounded in both directions, thus skipping this step.
-
-In order to be able to apply a pipeline, we will additionally need to tokenize the documents in some way. The approach for this tokenization is defined through the =tokenize_fun=. Here, we tokenize by word, replacing the original words with lemmatized versions.
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-list(
-    apply_pipeline(
-        raw_docs,
-        get_pipeline_fun=pipelines.get_pipeline_poc_topic_modeling,
-        tokenize_fun=nlp.raw_into_lemmas,
-        required_df_interval={},
-    )
-)
+pipeline = pipelines.get_pipeline_poc_topic_modeling(docs, required_df_interval={})
+list(apply_filters(docs, filters=pipeline))
 #+end_src
 
 #+RESULTS:
-: ['Bundesstaat', 'Mitteleuropa', '16', 'Bundesland', 'freiheitlich-demokratisch', 'sozial', 'Rechtsstaat', 'verfassn', '1949', 'gegründet', 'Bundesrepublik', 'stellen', 'jung', 'Ausprägung', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', 'Bundeshauptstadt', 'Regierungssitz', 'grenzen', 'Staat', 'Anteil', 'Nord', 'Ostsee', 'Norden', 'Bodensee', 'Alpen', 'Süden', 'liegen', 'gemäßigt', 'Klimazone', 'verfügen', '16', 'National', '100', 'Naturpark']
-: ['heutig', 'circa', '84,4', 'Million', 'Einwohner', 'zählen', 'Fläche', '357.588', 'Quadratkilometer', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'dicht', 'besiedelt', 'Flächenstaat', 'bevölkerungsreich', 'deutsch', 'Stadt', 'Metropole', 'Million', 'Einwohner', 'München', 'Köln', 'groß', 'Ballungsraum', 'Ruhrgebiet', 'Frankfurt', 'Main', 'europäisch', 'Finanzzentrum', 'global', 'Bedeutung', 'Geburtenrate', 'liegen', '1,58', 'Kind', 'pro', 'Frau', '2021']
+: ['Deutschland', 'Bundesstaat', 'Mitteleuropa', '16', 'Bundesland', 'freiheitlich-demokratisch', 'sozial', 'Rechtsstaat', 'verfassn', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'jung', 'Ausprägung', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', 'Bundeshauptstadt', 'Regierungssitz', 'Berlin', 'Deutschland', 'grenzen', 'Staat', 'Anteil', 'Nord', 'Ostsee', 'Norden', 'Bodensee', 'Alpen', 'Süden', 'liegen', 'gemäßigt', 'Klimazone', 'verfügen', '16', 'National', '100', 'Naturpark']
+: ['heutig', 'Deutschland', 'circa', '84,4', 'Million', 'Einwohner', 'zählen', 'Fläche', '357.588', 'Quadratkilometer', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'dicht', 'besiedelt', 'Flächenstaat', 'bevölkerungsreich', 'deutsch', 'Stadt', 'Berlin', 'Metropole', 'Million', 'Einwohner', 'Hamburg', 'München', 'Köln', 'groß', 'Ballungsraum', 'Ruhrgebiet', 'Frankfurt', 'Main', 'europäisch', 'Finanzzentrum', 'global', 'Bedeutung', 'Geburtenrate', 'liegen', '1,58', 'Kind', 'pro', 'Frau', '2021']
 
 ** Custom Pipelines
 A pipeline is defined simply as a sequence of filtering functions that take a document as their argument and return a subset of that document. Thus, defining a custom pipeline is equivalent to defining a number of such filtering functions.
-In order to make compositions of such filtering functions into pipelines simpler, we generalize filtering functions slightly by making them return a set of indices of tokens to potentially keep.
-Note that as a corollary, this means that filters cannot modify or remove parts of tokens.
-
-Tokenize the documents using =spaCy=:
-#+begin_src python
-import nlprep.spacy.props as nlp
-
-tokenized_docs = [nlp.raw_into_words(doc) for doc in raw_docs]
-#+end_src
 
 In the =specs.filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters.
 #+begin_src python
@@ -82,14 +95,12 @@ only_verbs_pipeline = [filters.get_filter_by_property(nlp.get_upos, {"VERB"})]
 
 We can apply the filters from our pipeline using the =apply_filters= function
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-from nlprep.core import apply_filters
-
-list(apply_filters(tokenized_docs, only_verbs_pipeline))
+list(apply_filters(docs, only_verbs_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['hat', 'verfasst', 'stellt', 'grenzt', 'hat', 'liegt', 'verfügt']
-: ['hat', 'zählt', 'liegt']
+: ['liegen', 'haben', 'verfügen', 'grenzen', 'verfassn', 'haben', 'stellen']
+: ['zählen', 'haben', 'liegen']
 
 Maybe we also want to filter out stop words, such as "hat". For this, we utilize =filters.negated=, which modifies a given filter function such that its results will be removed, rather than kept:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
@@ -97,43 +108,39 @@ non_stop_verbs_pipeline = only_verbs_pipeline + [
     filters.negated(filters.get_filter_by_bool_fun(nlp.is_stop))
 ]
 
-list(apply_filters(tokenized_docs, non_stop_verbs_pipeline))
+list(apply_filters(docs, non_stop_verbs_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['verfasst', 'stellt', 'grenzt', 'liegt', 'verfügt']
-: ['zählt', 'liegt']
+: ['liegen', 'verfügen', 'grenzen', 'verfassn', 'stellen']
+: ['zählen', 'liegen']
 
 Finally, we could only include sentences that are at least 20 tokens long:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-long_sents_pipeline = [
-    filters.get_filter_by_subset_len(nlp.into_sentences, min_len=20)
-]
+long_sents_pipeline = [filters.get_filter_by_subset_len(nlp.into_sentences, min_len=20)]
 
-list(
-    apply_filters(
-        tokenized_docs, unsafe_filters=long_sents_pipeline
-    )
-)
+list(apply_filters(docs, long_sents_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['Deutschland', 'grenzt', 'an', 'neun', 'Staaten', ',', 'es', 'hat', 'Anteil', 'an', 'der', 'Nord-', 'und', 'Ostsee', 'im', 'Norden', 'sowie', 'dem', 'Bodensee', 'und', 'den', 'Alpen', 'im', 'Süden', '.']
-: ['Das', 'heutige', 'Deutschland', 'hat', 'circa', '84,4', 'Millionen', 'Einwohner', 'und', 'zählt', 'bei', 'einer', 'Fläche', 'von', '357.588', 'Quadratkilometern', 'mit', 'durchschnittlich', '236', 'Einwohnern', 'pro', 'Quadratkilometer', 'zu', 'den', 'dicht', 'besiedelten', 'Flächenstaaten', '.']
+: ['Deutschland', 'grenzen', 'an', 'neun', 'Staat', '--', 'es', 'haben', 'Anteil', 'an', 'der', 'Nord', 'und', 'Ostsee', 'in', 'Norden', 'sowie', 'der', 'Bodensee', 'und', 'der', 'Alpen', 'in', 'Süden', '--']
+: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaat', '--']
 
 And then only consider the non-stop verbs of those sentences:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-list(
-    apply_filters(
-        tokenized_docs,
-        unsafe_filters=long_sents_pipeline,
-        safe_filters=non_stop_verbs_pipeline,
-    )
-)
+list(apply_filters(docs, long_sents_pipeline + non_stop_verbs_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['grenzt']
-: ['zählt']
+: ['grenzen']
+: ['zählen']
 
-Note that we specify here that the pipeline that only considers long sentences is to be considered "unsafe", whereas the pipeline that filters for non-stop verbs is to be considered "safe". This suggests that the former requires the documents to be intact (i.e. no tokens have been removed yet).
+Note that due to the internal document representation and the implementation of the processing steps with =spaCy=, the order of these filters does not matter here; we could also first filter by non-stop verbs and then by long sentences, and still get the same result.
+#+begin_src python :post print-results(results=*this*) :results replace value :exports both
+list(apply_filters(docs, non_stop_verbs_pipeline + long_sents_pipeline))
+#+end_src
+
+#+RESULTS:
+: ['grenzen']
+: ['zählen']
+

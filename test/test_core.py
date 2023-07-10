@@ -1,49 +1,54 @@
-import test.strategies as wlo_st
-from collections.abc import Collection
+import test.strategies as lanst
 
 from hypothesis import given
+from hypothesis import strategies as st
 from nlprep.core import apply_filters
-from nlprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter
 
 
-@given(wlo_st.documents_with_multiple_filters())
-def test_apply_filters_unsafe(
-    given_input: tuple[Document, Collection[Filter], Collection[Filter_Result]]
-):
-    doc, filter_funs, index_sets = given_input
+@given(st.lists(lanst.documents), st.lists(lanst.filters()))
+def test_apply_filters_safe(docs: list[Document], filter_funs: list[Filter]):
+    results = apply_filters(docs, filter_funs)
 
-    results = apply_filters([doc], unsafe_filters=filter_funs)
-
-    # if no filters were given, the document should be unmodified
+    # if no filters were given, the documents should be unmodified
     if len(filter_funs) == 0:
-        assert doc == results.__next__()
+        for doc, result in zip(docs, results):
+            assert doc == result
+
         return
 
-    collected_indices = Filter_Result.intersection(*index_sets)
-    expected_result = Document(
-        token for index, token in enumerate(doc) if index in collected_indices
-    )
+    # assert that the result is a sub-document
+    # and that all tokens to discard have been discarded
+    for doc, result in zip(docs, results):
+        assert result.selected.issubset(doc.selected)
 
-    assert expected_result == results.__next__()
+        for fun in filter_funs:
+            discarded_indices = set(range(len(doc.original_tokens))) - fun(doc).selected
+            for discarded_index in discarded_indices:
+                assert discarded_index not in result.selected
 
 
-@given(wlo_st.documents_with_chained_filters())
-def test_apply_filters_safe(
-    given_input: tuple[Document, Collection[Filter], Collection[Filter_Result]]
-):
-    doc, filter_funs, index_sets = given_input
+@given(st.lists(lanst.documents), st.lists(lanst.filters_unsafe()))
+def test_apply_filters_unsafe(docs: list[Document], filter_funs: list[Filter]):
+    results = apply_filters(docs, filter_funs)
 
-    results = apply_filters([doc], safe_filters=filter_funs)
-
-    # if no filters were given, the document should be unmodified
+    # if no filters were given, the documents should be unmodified
     if len(filter_funs) == 0:
-        assert doc == results.__next__()
+        for doc, result in zip(docs, results):
+            assert doc == result
+
         return
 
-    expected_result = doc
-    for index_set in index_sets:
-        expected_result = Document(
-            token for index, token in enumerate(expected_result) if index in index_set
-        )
+    # assert that the result is a sub-document
+    # and that all tokens to discard have been discarded
+    # note that here, we use filter functions that may return different
+    # sub-documents, depending on the previously selected tokens
+    for doc, result in zip(docs, results):
+        assert result.selected.issubset(doc.selected)
 
-    assert expected_result == results.__next__()
+        for fun in filter_funs:
+            doc = fun(doc)
+            discarded_indices = set(range(len(doc.original_tokens))) - doc.selected
+
+            for discarded_index in discarded_indices:
+                assert discarded_index not in result.selected

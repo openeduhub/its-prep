@@ -13,7 +13,7 @@ from collections.abc import Callable, Collection
 from typing import Any, Optional, Set, TypeVar
 
 import numpy as np
-from nlprep.types import Document, Filter, Filter_Result
+from nlprep.types import Document, Filter
 
 T = TypeVar("T")
 
@@ -25,11 +25,9 @@ def negated(fun: Filter) -> Filter:
     :param fun: The original filter function to negate.
     """
 
-    def negated_fun(doc: Document) -> Filter_Result:
-        original_indices = Filter_Result(range(len(doc)))
-        ignored_indices = fun(doc)
-
-        return original_indices - ignored_indices
+    def negated_fun(doc: Document) -> Document:
+        doc_filtered = fun(doc)
+        return doc.sub_doc(doc.selected - doc_filtered.selected)
 
     return negated_fun
 
@@ -49,11 +47,13 @@ def get_filter_by_property(
     :param req_properties: The collection of required properties.
     """
 
-    def filter_fun(doc: Document) -> Filter_Result:
-        return Filter_Result(
-            index
-            for index, prop in enumerate(property_fun(doc))
-            if prop in req_properties
+    def filter_fun(doc: Document) -> Document:
+        return doc.sub_doc(
+            {
+                index
+                for index, prop in enumerate(property_fun(doc))
+                if prop in req_properties
+            }
         )
 
     return filter_fun
@@ -68,9 +68,9 @@ def get_filter_by_bool_fun(bool_fun: Callable[[Document], Collection[bool]]) -> 
     :param bool_fun: The function to use to analyze the document.
     """
 
-    def filter_fun(doc: Document) -> Filter_Result:
-        return Filter_Result(
-            index for index, is_true in enumerate(bool_fun(doc)) if is_true
+    def filter_fun(doc: Document) -> Document:
+        return doc.sub_doc(
+            {index for index, is_true in enumerate(bool_fun(doc)) if is_true}
         )
 
     return filter_fun
@@ -113,10 +113,10 @@ def get_props_by_document_frequency(
                           i.e. do not include words exactly at the boundaries.
     """
     # override the interval boundaries according to the given rates
-    if min_rate:
+    if min_rate is not None:
         min_num = len(docs) * min_rate
 
-    if max_rate:
+    if max_rate is not None:
         max_num = len(docs) * max_rate
 
     # helper function to compute document frequencies
@@ -184,12 +184,14 @@ def get_filter_by_subset_len(
                        into a collection of subsets.
     """
 
-    def filter_fun(doc: Document) -> Filter_Result:
+    def filter_fun(doc: Document) -> Document:
         len_by_token = [len(col) for col in subset_fun(doc) for _ in col]
-        return Filter_Result(
-            index
-            for index, length in enumerate(len_by_token)
-            if __in_interval(length, min_len, max_len, interval_open)
+        return doc.sub_doc(
+            {
+                index
+                for index, length in enumerate(len_by_token)
+                if __in_interval(length, min_len, max_len, interval_open)
+            }
         )
 
     return filter_fun

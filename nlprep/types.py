@@ -1,16 +1,50 @@
-from collections.abc import Collection
-from typing import Protocol
+from __future__ import annotations
+
+from collections.abc import Callable, Collection, Iterable, Iterator, Set
+from dataclasses import dataclass, field
+from typing import Any, Protocol
 
 
-# On the lowest level, represent documents as tuples of tokens.
-# These tokens are considered the most atomic part of the document.
-# We choose tuples, rather than generic collections, because
-# tuples are hashable and documents should not be mutable.
-Document = tuple[str, ...]
+@dataclass(frozen=True, eq=True)
+class Document:
+    original_text: str
+    original_tokens: tuple[str, ...]
+    selected: frozenset[int]
 
+    def __repr__(self) -> str:
+        return self.tokens.__repr__()
 
-# The result of a filter is an immutable set of indices.
-Filter_Result = frozenset[int]
+    @property
+    def tokens(self) -> tuple[str, ...]:
+        return tuple(self.original_tokens[index] for index in self.selected)
+
+    @classmethod
+    def fromtext(
+        cls, text: str, tokenize_fun: Callable[[str], tuple[str, ...]]
+    ) -> Document:
+        tokens = tokenize_fun(text)
+        return Document(
+            original_text=text,
+            original_tokens=tokens,
+            selected=frozenset(range(len(tokens))),
+        )
+
+    @classmethod
+    def fromtokens(cls, __iterable: Iterable[str]) -> Document:
+        tokens = tuple(__iterable)
+        text = " ".join(tokens)
+        return Document(
+            original_text=text,
+            original_tokens=tokens,
+            selected=frozenset(range(len(tokens))),
+        )
+
+    def sub_doc(self, selected_indices: Set[int]) -> Document:
+        return Document(
+            original_text=self.original_text,
+            original_tokens=self.original_tokens,
+            selected=self.selected & selected_indices,
+        )
 
 
 class Filter(Protocol):
@@ -20,11 +54,12 @@ class Filter(Protocol):
     Filter functions are composed to created pipelines.
     """
 
-    def __call__(self, doc: Document) -> Filter_Result:
+    def __call__(self, doc: Document) -> Document:
         """
-        Return an immutable set of token-indices to keep.
+        Return a sub-document of the given document.
+        These should be created using the doc.sub_doc method.
 
-        :param doc: The tokenized document to process.
+        :param doc: The document to process.
         """
         ...
 
@@ -39,15 +74,7 @@ class Pipeline_Generator(Protocol):
     The reason why we supply the document corpus here is because some filters
     may require an initial analysis of all documents,
     e.g. in order to filter by the document frequency of lemmatized tokens.
-
-    :return: A tuple of collections of first unsafe, then safe filters.
-             Unsafe filters need the document to be processed to be 'intact',
-             e.g. in order to contextualize tokens or to process sentences.
-             Safe filters are perfectly valid to apply on documents
-             that have already been filtered.
     """
 
-    def __call__(
-        self, docs: Collection[Document], **kwargs
-    ) -> tuple[Pipeline, Pipeline]:
+    def __call__(self, docs: Collection[Document], **kwargs) -> Pipeline:
         ...

@@ -9,7 +9,6 @@
   outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-
         pkgs = nixpkgs.legacyPackages.${system};
 
         # build the spaCy language processing pipeline as a python package
@@ -34,6 +33,7 @@
           with python-packages; [
             # NLP
             de_dep_news_trf
+            numpy
             spacy
           ];
         python-build = pkgs.python3.withPackages python-packages-build;
@@ -62,7 +62,7 @@
         # declare how the python package shall be built
         nlprep = python-build.pkgs.buildPythonPackage {
           pname = "nlprep";
-          version = "0.0.1";
+          version = "0.1.1";
 
           propagatedBuildInputs = (python-packages-build python-build.pkgs);
           nativeCheckInputs = (python-packages-test python-test.pkgs);

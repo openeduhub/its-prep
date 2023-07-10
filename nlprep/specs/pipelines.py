@@ -22,7 +22,7 @@ def get_pipeline_generic_topic_modeling(
     ignored_upos_tags: Collection[str],
     ignored_lemmas: Collection[str],
     required_df_interval: dict[str, Any],
-) -> tuple[Pipeline, Pipeline]:
+) -> Pipeline:
     """
     Pipeline of filter functions used during pre-processing for topic modeling.
 
@@ -36,25 +36,18 @@ def get_pipeline_generic_topic_modeling(
       that tokens must fall into.
       See documentation of filter_specs.get_filter_by_frequency_in_interval.
     """
-    return (
-        [
-            # filter by upos tags
-            filters.negated(
-                filters.get_filter_by_property(get_upos_fun, ignored_upos_tags)
-            ),
-            # filter by stop words
-            filters.negated(filters.get_filter_by_bool_fun(is_stop_fun)),
-            # filter by ignored lemmas
-            filters.negated(
-                filters.get_filter_by_property(lemmatize_fun, ignored_lemmas)
-            ),
-            # filter by document frequency of lemmatized tokens
-            filters.get_filter_by_frequency(
-                docs, lemmatize_fun, **required_df_interval
-            ),
-        ],
-        [],
-    )
+    return [
+        # filter by upos tags
+        filters.negated(
+            filters.get_filter_by_property(get_upos_fun, ignored_upos_tags)
+        ),
+        # filter by stop words
+        filters.negated(filters.get_filter_by_bool_fun(is_stop_fun)),
+        # filter by ignored lemmas
+        filters.negated(filters.get_filter_by_property(lemmatize_fun, ignored_lemmas)),
+        # filter by document frequency of lemmatized tokens
+        filters.get_filter_by_frequency(docs, lemmatize_fun, **required_df_interval),
+    ]
 
 
 def get_pipeline_poc_topic_modeling(
@@ -70,11 +63,10 @@ def get_pipeline_poc_topic_modeling(
         cols.symbols,
         cols.fillers,
         cols.lrts,
-        cols.regions,
         cols.sources,
-        cols.target_groups,
+        cols.target_audiences,
     ),
-) -> tuple[Pipeline, Pipeline]:
+) -> Pipeline:
     """The particular pipeline used for the PoC topic modeling application."""
     return get_pipeline_generic_topic_modeling(
         docs,

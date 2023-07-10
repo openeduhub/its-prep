@@ -18,37 +18,45 @@ import spacy.tokens
 import de_dep_news_trf
 
 nlp = de_dep_news_trf.load()
-DOCUMENT_CACHE: dict[Document, spacy.tokens.Doc] = dict()
+DOCUMENT_CACHE: dict[str, spacy.tokens.Doc] = dict()
 
 T = TypeVar("T")
 
 
-def _raw_into_property(raw_doc: str, prop: str) -> Document:
+def _raw_into_property(raw_doc: str, prop: str) -> tuple[str, ...]:
     processed_doc = nlp(raw_doc)
-    doc = Document(getattr(token, prop) for token in processed_doc)
 
-    # cache the processed document for later use
-    DOCUMENT_CACHE[doc] = processed_doc
+    # cache the processed raw text for later use
+    DOCUMENT_CACHE[raw_doc] = processed_doc
 
-    return doc
+    return tuple(getattr(token, prop) for token in processed_doc)
 
 
-def raw_into_words(raw_doc: str) -> Document:
+def raw_into_words(raw_doc: str) -> tuple[str, ...]:
     return _raw_into_property(raw_doc, "text")
 
 
-def raw_into_lemmas(raw_doc: str) -> Document:
+def raw_into_lemmas(raw_doc: str) -> tuple[str, ...]:
     return _raw_into_property(raw_doc, "lemma_")
 
 
 def from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     """
     Transform functions that act on processed spaCy documents
-    to functions that act on generic, tokenized documents.
+    to functions that act on our document representation.
+
+    This allows us to easily define processing steps within spaCy's context,
+    without having to deal with mapping its internal document representation
+    to ours.
+
+    We store a mapping between the original text and the processed document,
+    such that each sub-document does not need to be processed again.
     """
 
     def wrapped_fun(doc: Document) -> T:
-        processed_doc = DOCUMENT_CACHE.setdefault(doc, nlp(" ".join(doc)))
+        processed_doc = DOCUMENT_CACHE.setdefault(
+            doc.original_text, nlp(doc.original_text)
+        )
         return fun(processed_doc)
 
     return wrapped_fun
