@@ -38,27 +38,6 @@ def tokenize_documents(
     raw_docs: Iterable[str],
     tokenize_fun: Callable[[str], tuple[str, ...]],
 ) -> Iterator[Document]:
+    """Create Document objects from raw text, using the given tokenizer."""
     for raw_doc in raw_docs:
         yield Document.fromtext(raw_doc, tokenize_fun=tokenize_fun)
-
-
-def apply_pipeline(
-    raw_docs: Iterable[str],
-    get_pipeline_fun: Pipeline_Generator,
-    tokenize_fun: Callable[[str], tuple[str, ...]],
-    **kwargs,
-) -> Iterable[Document]:
-    """
-    Directly apply the chosen pipeline on completely unprocessed documents.
-
-    Usually, it would be necessary to tokenize the documents first,
-    however, this is done automatically using the given tokenize_fun.
-
-    :args kwargs: Additional keyword arguments passed onto the pipeline
-                  generator function.
-    """
-    docs = [
-        Document.fromtext(raw_doc, tokenize_fun=tokenize_fun) for raw_doc in raw_docs
-    ]
-    pipeline = get_pipeline_fun(docs, **kwargs)
-    return apply_filters(docs, pipeline)
