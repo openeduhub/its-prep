@@ -14,20 +14,18 @@ they will actually act on the internal Document representation.
 from collections.abc import Collection, Callable
 from typing import TypeVar
 from nlprep.types import Document
+from nlprep.utils import defaultdict_keyed
 import spacy.tokens
 import de_dep_news_trf
 
 nlp = de_dep_news_trf.load()
-DOCUMENT_CACHE: dict[str, spacy.tokens.Doc] = dict()
+DOCUMENT_CACHE: defaultdict_keyed[str, spacy.tokens.Doc] = defaultdict_keyed(nlp)
 
 T = TypeVar("T")
 
 
 def _raw_into_property(raw_doc: str, prop: str) -> tuple[str, ...]:
-    processed_doc = nlp(raw_doc)
-
-    # cache the processed raw text for later use
-    DOCUMENT_CACHE[raw_doc] = processed_doc
+    processed_doc = DOCUMENT_CACHE[raw_doc]
 
     return tuple(getattr(token, prop) for token in processed_doc)
 
@@ -54,10 +52,7 @@ def from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     """
 
     def wrapped_fun(doc: Document) -> T:
-        processed_doc = DOCUMENT_CACHE.setdefault(
-            doc.original_text, nlp(doc.original_text)
-        )
-        return fun(processed_doc)
+        return fun(DOCUMENT_CACHE[doc.original_text])
 
     return wrapped_fun
 

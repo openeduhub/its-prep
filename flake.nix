@@ -62,7 +62,7 @@
         # declare how the python package shall be built
         nlprep = python-build.pkgs.buildPythonPackage {
           pname = "nlprep";
-          version = "0.1.1";
+          version = "0.1.2";
 
           propagatedBuildInputs = (python-packages-build python-build.pkgs);
           nativeCheckInputs = (python-packages-test python-test.pkgs);
