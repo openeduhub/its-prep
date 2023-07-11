@@ -1,13 +1,27 @@
 #+title: Natural Language Pre-Processing
 #+EXPORT_EXCLUDE_TAGS: noexport
-# Local Variables:
-# jinx-local-words: "Utils"
-# End:
 
+The goal of this library is to stream-line the process of defining natural language pre-processing pipelines, particularly in the context of educational resources.
+
+* Design
+
+Core to this library is the abstraction of natural language pre-processing as an orchestration of multiple steps that each take a tokenized document and return a subset of its tokens, based on some internal logic. We call these steps filter functions (of type =nlprep.types.Filter=). A pre-processing pipeline is simply a collection of filters.
+
+To ensure that during filtering, no necessary information is discarded (e.g. for filters that act on sentences), documents are represented through an internal, immutable format (=nlprep.types.Document=) that always contains both the current subset of tokens and the full contents of the original document.
+Thus, a filter is simply any function that takes a document of type =Document= and returns another =Document=.
+
+* Sub-Modules
+
+- =nlprep.core= contains core functionality, such as the application of a pre-processing pipeline onto a document corpus.
+- =nlprep.specs= contains pre-defined pipelines in =nlprep.specs.pipelines= and functionality to easily define custom filter functions in =nlprep.specs.filters=.
+- =nlprep.spacy.props= contains various concrete NLP processing tasks, such as lemmatization or determination of POS tags. These are mostly used to compute properties to base the filters defined with =nlprep.specs.filters= on.
+  
 * Tutorial
 :PROPERTIES:
 :HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py :kernel python3
 :END:
+
+In this section, we will be demonstrating the functionality by applying both a pre-defined processing pipeline, as well as multiple custom ones.
 
 ** Utils :noexport:
 :PROPERTIES:
@@ -142,4 +156,3 @@ list(apply_filters(docs, non_stop_verbs_pipeline + long_sents_pipeline))
 #+RESULTS:
 : ['grenzen']
 : ['zählen']
-
