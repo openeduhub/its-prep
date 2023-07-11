@@ -47,8 +47,7 @@ Tokenize the documents using =spaCy=, displaying the tokens using their lemmatiz
 import nlprep.spacy.props as nlp
 from nlprep.core import tokenize_documents
 
-docs = list(tokenize_documents(raw_docs, tokenize_fun=nlp.raw_into_lemmas))
-docs
+(docs := list(tokenize_documents(raw_docs, tokenize_fun=nlp.raw_into_lemmas)))
 #+end_src
 
 #+RESULTS:
@@ -83,7 +82,7 @@ list(apply_filters(docs, filters=pipeline))
 ** Custom Pipelines
 A pipeline is defined simply as a sequence of filtering functions that take a document as their argument and return a subset of that document. Thus, defining a custom pipeline is equivalent to defining a number of such filtering functions.
 
-In the =specs.filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters.
+In the =specs.filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters from NLP processing steps (e.g. those defined in =spacy.props=).
 #+begin_src python
 import nlprep.specs.filters as filters
 #+end_src
@@ -102,7 +101,7 @@ list(apply_filters(docs, only_verbs_pipeline))
 : ['liegen', 'haben', 'verfügen', 'grenzen', 'verfassn', 'haben', 'stellen']
 : ['zählen', 'haben', 'liegen']
 
-Maybe we also want to filter out stop words, such as "hat". For this, we utilize =filters.negated=, which modifies a given filter function such that its results will be removed, rather than kept:
+Maybe we also want to filter out stop words. For this, we utilize =filters.negated=, which modifies a given filter function such that its results will be removed, rather than kept:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
 non_stop_verbs_pipeline = only_verbs_pipeline + [
     filters.negated(filters.get_filter_by_bool_fun(nlp.is_stop))
