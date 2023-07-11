@@ -3,6 +3,50 @@
 
 The goal of this library is to stream-line the process of defining natural language pre-processing pipelines, particularly in the context of educational resources.
 
+* Installation
+
+This library can be installed either as a =Nix Flake= input or as a Python library.
+
+** Through pip
+
+To install this package through ~pip~, it should be sufficient to run
+#+begin_src sh
+pip install git+https://github.com/openeduhub/nlprep.git@main
+#+end_src
+
+Note that you will have to manually ensure that [[https://huggingface.co/spacy/de_dep_news_trf][de_dep_news_trf]] is installed, e.g. through
+#+begin_src sh
+python -m spacy download de_dep_news_trf
+#+end_src
+
+** In another Nix Flake
+
+Include this Flake in the inputs of your Flake:
+#+begin_src nix
+{
+  inputs = {
+    nlprep = {
+      url = "github:openeduhub/nlprep";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+#+end_src
+
+Then, simply include its default package in your Python environment, e.g.
+#+begin_src nix
+{
+  outputs = { self, nixpkgs, ... }:
+    let
+      nlprep = self.inputs.nlprep.defaultPackage.${system};
+
+      python-packages = python-packages: [ nlprep ];
+      local-python = pkgs.python3.withPackages python-packages;
+    in
+      {...};
+}
+#+end_src
+
 * Design
 
 Core to this library is the abstraction of natural language pre-processing as an orchestration of multiple steps that each take a tokenized document and return a subset of its tokens, based on some internal logic. We call these steps filter functions (of type =nlprep.types.Filter=). A pre-processing pipeline is simply a collection of filters.
