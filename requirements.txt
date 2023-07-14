@@ -1,3 +1,0 @@
-de_dep_news_trf
-numpy
-spacy

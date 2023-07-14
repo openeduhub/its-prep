@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "nlprep"
+version = "0.2.1"
+description = "A generic framework for defining natural language pre-processing pipelines"
+authors = ["joopitz <jonas.opitz@live.de>"]
+readme = "README.org"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.25.1"
+spacy = "^3.6.0"
+de-dep-news-trf = {url = "https://github.com/explosion/spacy-models/releases/download/de_dep_news_trf-3.6.1/de_dep_news_trf-3.6.1-py3-none-any.whl"}
+torch = {url = "https://files.pythonhosted.org/packages/8c/4d/17e07377c9c3d1a0c4eb3fde1c7c16b5a0ce6133ddbabc08ceef6b7f2645/torch-2.0.1-cp310-cp310-manylinux1_x86_64.whl"}
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.14.0"
+black = "^23.7.0"
+isort = "^5.12.0"
+mypy = "^1.4.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
+hypothesis = "^6.81.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

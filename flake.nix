@@ -1,83 +1,48 @@
 {
-  description = "Dependency and Build Process for the Text Pre-Processing Pipeline";
+  description = "Application packaged using poetry2nix";
 
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.poetry2nix = {
+    url = "github:nix-community/poetry2nix";
+    inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
+  outputs = { self, nixpkgs, flake-utils, poetry2nix }:
+    let
+      system = "x86_64-linux";
 
-        # build the spaCy language processing pipeline as a python package
-        de_dep_news_trf = with pkgs.python3Packages;
-          buildPythonPackage rec {
-            pname = "de_dep_news_trf";
-            version = "3.5.0";
-            src = pkgs.fetchzip {
-              url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
-              hash = "sha256-MleftGMj+VK8hAE+EOg0VhtFUg/oOH3grPbRzklyiVE=";
-            };
-            doCheck = false;
-            propagatedBuildInputs = [
-              spacy
-              spacy-transformers
-            ];
-          };
+      # import nixpkgs and poetry2nix functions
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      inherit (poetry2nix.legacyPackages.${system}) mkPoetryApplication mkPoetryPackages mkPoetryEnv;
 
+      # specify information about the package
+      projectDir = self;
+      python = pkgs.python310;
+      # fix missing dependencies of external packages
+      overrides = pkgs.poetry2nix.overrides.withDefaults (self: super: {
+        confection = super.confection.overridePythonAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ self.setuptools ];
+        });
+      });
 
-        # declare the python packages used for building, testing & developing
-        python-packages-build = python-packages:
-          with python-packages; [
-            # NLP
-            de_dep_news_trf
-            numpy
-            spacy
-          ];
-        python-build = pkgs.python3.withPackages python-packages-build;
-
-        python-packages-test = python-packages:
-          with python-packages; [
-            # type checking
-            mypy
-            # unit testing
-            pytest
-            pytest-cov
-            hypothesis
-          ] ++ (python-packages-build python-packages);
-        python-test = pkgs.python3.withPackages python-packages-build;
-
-        python-packages-devel = python-packages:
-          with python-packages; [
-            # coding utilities
-            black
-            flake8
-            isort
-            ipython
-          ] ++ (python-packages-test python-packages);
-        python-devel = pkgs.python3.withPackages python-packages-devel;
-
-        # declare how the python package shall be built
-        nlprep = python-build.pkgs.buildPythonPackage {
-          pname = "nlprep";
-          version = "0.1.2";
-
-          propagatedBuildInputs = (python-packages-build python-build.pkgs);
-          nativeCheckInputs = (python-packages-test python-test.pkgs);
-
-          src = ./.;
-        };
-
-      in {
-        defaultPackage = nlprep;
-        devShell = pkgs.mkShell {
+      # generate development environment
+      poetry-env = mkPoetryEnv {
+        inherit projectDir python overrides;
+        preferWheels = true;
+        groups = [ "dev" "test" ];
+      };
+      
+    in
+      {
+        devShells.${system}.default = pkgs.mkShell {
           buildInputs = [
-            python-devel
-            # python language server
+            pkgs.poetry
             pkgs.nodePackages.pyright
+            poetry-env
           ];
         };
-      }
-    );}
+      };
+}
