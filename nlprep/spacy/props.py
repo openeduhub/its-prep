@@ -31,14 +31,16 @@ def _raw_into_property(raw_doc: str, prop: str) -> tuple[str, ...]:
 
 
 def raw_into_words(raw_doc: str) -> tuple[str, ...]:
+    """Tokenize a document into its words"""
     return _raw_into_property(raw_doc, "text")
 
 
 def raw_into_lemmas(raw_doc: str) -> tuple[str, ...]:
+    """Tokenize a document into its lemmas"""
     return _raw_into_property(raw_doc, "lemma_")
 
 
-def from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
+def _from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     """
     Transform functions that act on processed spaCy documents
     to functions that act on our document representation.
@@ -57,28 +59,33 @@ def from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     return wrapped_fun
 
 
-@from_doc
+@_from_doc
 def get_upos(processed_doc: spacy.tokens.Doc) -> Collection[str]:
+    """The universal POS tags of each token"""
     return [token.pos_ for token in processed_doc]
 
 
-@from_doc
+@_from_doc
 def is_stop(processed_doc: spacy.tokens.Doc) -> Collection[bool]:
+    """Indicators whether each token is a stop word"""
     return [token.is_stop for token in processed_doc]
 
 
-@from_doc
+@_from_doc
 def lemmatize(processed_doc: spacy.tokens.Doc) -> Collection[str]:
+    """The lemmatized version of each token"""
     return [token.lemma_ for token in processed_doc]
 
 
-@from_doc
+@_from_doc
 def into_sentences(processed_doc: spacy.tokens.Doc) -> Collection[Collection[str]]:
+    """Split the document by its sentences"""
     return [[token.text for token in sent] for sent in processed_doc.sents]
 
 
-@from_doc
+@_from_doc
 def into_sentences_lemmatized(
     processed_doc: spacy.tokens.Doc,
 ) -> Collection[Collection[str]]:
+    """Split the document by its sentences, with lemmatization"""
     return [[token.lemma_ for token in sent] for sent in processed_doc.sents]

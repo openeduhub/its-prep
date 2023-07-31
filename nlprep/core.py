@@ -1,6 +1,5 @@
 """
-This sub-module defines core functionality,
-like applying or negating filters.
+Core functionality, like applying filters or tokenizing documents.
 """
 from collections.abc import Callable, Iterable, Iterator
 
