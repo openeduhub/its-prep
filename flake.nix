@@ -9,7 +9,8 @@
   outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {inherit system;};
+        python = pkgs.python310;
 
         # build the spaCy language processing pipeline as a python package
         de_dep_news_trf = with pkgs.python3Packages;
@@ -36,18 +37,13 @@
             numpy
             spacy
           ];
-        python-build = pkgs.python3.withPackages python-packages-build;
+        python-build = python.withPackages python-packages-build;
 
-        python-packages-test = python-packages:
+        python-packages-docs = python-packages:
           with python-packages; [
-            # type checking
-            mypy
-            # unit testing
-            pytest
-            pytest-cov
-            hypothesis
-          ] ++ (python-packages-build python-packages);
-        python-test = pkgs.python3.withPackages python-packages-build;
+            sphinx
+          ];
+        python-docs = python.withPackages python-packages-docs;
 
         python-packages-devel = python-packages:
           with python-packages; [
@@ -56,18 +52,27 @@
             flake8
             isort
             ipython
-          ] ++ (python-packages-test python-packages);
-        python-devel = pkgs.python3.withPackages python-packages-devel;
+            # type checking
+            mypy
+            # unit testing
+            pytest
+            pytest-cov
+            hypothesis
+          ]
+          ++ (python-packages-build python-packages)
+          ++ (python-packages-docs python-packages);
+        python-devel = python.withPackages python-packages-devel;
 
         # declare how the python package shall be built
-        nlprep = python-build.pkgs.buildPythonPackage {
+        nlprep = with python-build.pkgs; buildPythonPackage {
           pname = "nlprep";
           version = "0.1.2";
-
-          propagatedBuildInputs = (python-packages-build python-build.pkgs);
-          nativeCheckInputs = (python-packages-test python-test.pkgs);
-
           src = ./.;
+          propagatedBuildInputs = (python-packages-build python-build.pkgs);
+          nativeCheckInputs = [
+            pytestCheckHook
+            hypothesis
+          ];
         };
 
       in {
