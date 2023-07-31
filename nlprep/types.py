@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections.abc import Callable, Collection, Iterable, Iterator, Set
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Generic, Protocol, TypeVar
+
+T = TypeVar("T")
 
 
 @dataclass(frozen=True, eq=True)
@@ -12,10 +14,10 @@ class Document:
     selected: frozenset[int]
 
     def __repr__(self) -> str:
-        return self.tokens.__repr__()
+        return self.selected_tokens.__repr__()
 
     @property
-    def tokens(self) -> tuple[str, ...]:
+    def selected_tokens(self) -> tuple[str, ...]:
         return tuple(self.original_tokens[index] for index in self.selected)
 
     @classmethod
@@ -65,6 +67,18 @@ class Filter(Protocol):
 
 
 Pipeline = Collection[Filter]
+
+class Property_Function(Generic[T]):
+    """
+    Functions that compute some property for the tokens of the document.
+    """
+    def __call__(self, doc: Document) -> Collection[T]:
+        """
+        Return the property of each *original* token in the document.
+
+        I.e. len(result) == len(doc.original_tokens)
+        """
+        ...
 
 
 class Pipeline_Generator(Protocol):

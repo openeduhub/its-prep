@@ -12,7 +12,7 @@ def test_document_from_text(text: str, tokenizer: Callable[[str], tuple[str, ...
     assert doc.original_text == text
     assert doc.original_tokens == tokens
     assert doc.selected == set(range(len(tokens)))
-    assert doc.tokens == tokens
+    assert doc.selected_tokens == tokens
 
 
 @given(tokens)
@@ -20,7 +20,7 @@ def test_document_from_tokens(tokens: tuple[str, ...]):
     doc = Document.fromtokens(tokens)
 
     assert doc.original_tokens == tokens
-    assert doc.tokens == tokens
+    assert doc.selected_tokens == tokens
     assert doc.selected == set(range(len(tokens)))
 
 
@@ -31,13 +31,13 @@ def test_document_sub_doc(doc: Document, index_set: Set[int]):
     assert result.selected == result.selected & index_set
 
     expected_tokens = [
-        token for index, token in enumerate(doc.tokens) if index in index_set
+        token for index, token in enumerate(doc.selected_tokens) if index in index_set
     ]
 
-    assert len(result.tokens) == len(expected_tokens)
+    assert len(result.selected_tokens) == len(expected_tokens)
 
-    for result_token in result.tokens:
+    for result_token in result.selected_tokens:
         assert result_token in expected_tokens
 
     for expected_token in expected_tokens:
-        assert expected_token in result.tokens
+        assert expected_token in result.selected_tokens

@@ -13,7 +13,7 @@ from collections.abc import Callable, Collection
 from typing import Any, Optional, Set, TypeVar
 
 import numpy as np
-from nlprep.types import Document, Filter
+from nlprep.types import Document, Filter, Property_Function
 
 T = TypeVar("T")
 
@@ -33,7 +33,7 @@ def negated(fun: Filter) -> Filter:
 
 
 def get_filter_by_property(
-    property_fun: Callable[[Document], Collection[T]],
+    property_fun: Property_Function[T],
     req_properties: Collection[T],
 ) -> Filter:
     """
@@ -41,10 +41,6 @@ def get_filter_by_property(
 
     This can be used to remove filter based universal POS tags,
     a particular (un)wanted vocabulary of lemmatized tokens, etc.
-
-    :param property_fun: The function to use to analyze the document,
-                         obtaining the property to check for.
-    :param req_properties: The collection of required properties.
     """
 
     def filter_fun(doc: Document) -> Document:
@@ -59,13 +55,11 @@ def get_filter_by_property(
     return filter_fun
 
 
-def get_filter_by_bool_fun(bool_fun: Callable[[Document], Collection[bool]]) -> Filter:
+def get_filter_by_bool_fun(bool_fun: Property_Function[bool]) -> Filter:
     """
     Return a filter that returns the tokens that are considered True.
 
     This can be used to filter for stop words, for example.
-
-    :param bool_fun: The function to use to analyze the document.
     """
 
     def filter_fun(doc: Document) -> Document:
@@ -90,7 +84,7 @@ def __in_interval(
 
 def get_props_by_document_frequency(
     docs: Collection[Document],
-    property_fun: Callable[[Document], Collection[T]],
+    property_fun: Property_Function[T],
     min_num: Optional[float] = None,
     max_num: Optional[float] = None,
     min_rate: Optional[float] = None,
@@ -138,7 +132,7 @@ def get_props_by_document_frequency(
 
 def get_filter_by_frequency(
     docs: Collection[Document],
-    property_fun: Callable[[Document], Collection[T]],
+    property_fun: Property_Function[T],
     min_num: Optional[int] = None,
     max_num: Optional[int] = None,
     min_rate: Optional[float] = None,
@@ -170,7 +164,7 @@ def get_filter_by_frequency(
 
 
 def get_filter_by_subset_len(
-    subset_fun: Callable[[Document], Collection[Collection[Any]]],
+    subset_fun: Callable[[Document], Collection[Collection[T]]],
     min_len: Optional[int] = None,
     max_len: Optional[int] = None,
     interval_open: bool = False,

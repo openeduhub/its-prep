@@ -5,7 +5,8 @@ from numpy import select
 from nlprep.types import Document, Filter
 import hypothesis.strategies as st
 
-texts = st.text(st.characters())
+# only generate UTF-8
+texts = st.text(st.characters(blacklist_characters=["\ud800"]))
 
 tokens = st.lists(texts).map(lambda x: tuple(x))
 

@@ -24,7 +24,7 @@ def test_negate_does_negate(doc: Document, filter_fun: Filter, negation_count: i
     neg_result = negated_filter(doc)
     pos_result = filter_fun(doc)
 
-    if len(doc.tokens) > 0:
+    if len(doc.selected_tokens) > 0:
         assert neg_result != pos_result
 
     assert neg_result.selected & pos_result.selected == set()
