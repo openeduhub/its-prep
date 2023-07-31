@@ -102,8 +102,8 @@ Note that as a corollary, this means that filters cannot modify or remove parts 
 
 Tokenize the documents using =spaCy=, displaying the tokens using their lemmatized form.
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-import nlprep.spacy.props as nlp
-from nlprep.core import tokenize_documents
+import nlprep.spacy as nlp
+from nlprep import tokenize_documents
 
 (docs := list(tokenize_documents(raw_docs, tokenize_fun=nlp.raw_into_lemmas)))
 #+end_src
@@ -116,9 +116,9 @@ from nlprep.core import tokenize_documents
 A collection of common pipelines can be found in the =specs.pipelines= sub-module, and a collection of common NLP steps, implemented in [[https://spacy.io/][spaCy]], can be found in =spacy.props=.
 Additionally, we import =apply_filters=, which is a helper function that allows for easy application of pipelines onto unprocessed data.
 #+begin_src python
-import nlprep.specs.pipelines as pipelines
-import nlprep.spacy.props as nlp
-from nlprep.core import apply_filters
+import nlprep.pipelines as pipelines
+import nlprep.props as nlp
+from nlprep import apply_filters
 #+end_src
 
 Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract data that is relevant to the semantic context of the given document. This is done by
@@ -142,7 +142,7 @@ A pipeline is defined simply as a sequence of filtering functions that take a do
 
 In the =specs.filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters from NLP processing steps (e.g. those defined in =spacy.props=).
 #+begin_src python
-import nlprep.specs.filters as filters
+import nlprep.filters as filters
 #+end_src
 
 Say we wanted to only return only the verbs in the given documents. This could be achieved through
