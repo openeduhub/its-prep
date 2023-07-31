@@ -30,7 +30,6 @@
             ];
           };
 
-
         # declare the python packages used for building, testing & developing
         python-packages-build = python-packages:
           with python-packages; [
@@ -44,6 +43,8 @@
         python-packages-docs = python-packages:
           with python-packages; [
             sphinx
+            sphinx-rtd-theme
+            sphinx-autodoc-typehints
           ];
         python-docs = python.withPackages python-packages-docs;
 
@@ -72,25 +73,32 @@
           src = nix-filter {
             root = self;
             include = [
-              pname
+              "${pname}"
               "test"
               ./setup.py
               ./requirements.txt
             ];
-            exclude = [
-              "${pname}/__pycache__"
-            ];
+            exclude = [ (nix-filter.matchExt "pyc") ];
           };
           propagatedBuildInputs = (python-packages-build python-build.pkgs);
-          nativeCheckInputs = [
-            pytestCheckHook
-            hypothesis
-          ];
+          nativeCheckInputs = [ pytestCheckHook hypothesis ];
         };
 
+        docs = pkgs.runCommand "docs" {
+          buildInputs = [
+            python-docs
+            (nlprep.override {doCheck = false;})
+          ];
+        } (pkgs.writeShellScript "docs.sh" ''
+            sphinx-build -M html ${./docs} $out
+          ''); 
+
       in {
-        defaultPackage = nlprep;
-        devShell = pkgs.mkShell {
+        packages = rec {
+          inherit nlprep docs;
+          default = nlprep;
+        };
+        devShells.default = pkgs.mkShell {
           buildInputs = [
             python-devel
             # python language server

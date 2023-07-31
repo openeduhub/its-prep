@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pre-build specifications &mdash; nlprep 0.1.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="spaCy utilities" href="nlprep.spacy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            nlprep
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="nlprep.html">Core module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlprep.spacy.html">spaCy utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pre-build specifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-nlprep.specs.collections">Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nlprep.specs.filters">Filters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.get_filter_by_bool_fun"><code class="docutils literal notranslate"><span class="pre">get_filter_by_bool_fun()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.get_filter_by_frequency"><code class="docutils literal notranslate"><span class="pre">get_filter_by_frequency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.get_filter_by_property"><code class="docutils literal notranslate"><span class="pre">get_filter_by_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.get_filter_by_subset_len"><code class="docutils literal notranslate"><span class="pre">get_filter_by_subset_len()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.get_props_by_document_frequency"><code class="docutils literal notranslate"><span class="pre">get_props_by_document_frequency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.filters.negated"><code class="docutils literal notranslate"><span class="pre">negated()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nlprep.specs.pipelines">Pipelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.pipelines.get_pipeline_generic_topic_modeling"><code class="docutils literal notranslate"><span class="pre">get_pipeline_generic_topic_modeling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.specs.pipelines.get_pipeline_poc_topic_modeling"><code class="docutils literal notranslate"><span class="pre">get_pipeline_poc_topic_modeling()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">nlprep</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pre-build specifications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/nlprep.specs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pre-build-specifications">
+<h1>Pre-build specifications<a class="headerlink" href="#pre-build-specifications" title="Permalink to this heading"></a></h1>
+<section id="module-nlprep.specs.collections">
+<span id="collections"></span><h2>Collections<a class="headerlink" href="#module-nlprep.specs.collections" title="Permalink to this heading"></a></h2>
+<p>A collection of lists of properties that are of particular note for us.</p>
+<p>This includes, for example, collections of terms that we want to ignore
+in certain contexts.</p>
+</section>
+<section id="module-nlprep.specs.filters">
+<span id="filters"></span><h2>Filters<a class="headerlink" href="#module-nlprep.specs.filters" title="Permalink to this heading"></a></h2>
+<p>A collection of filter functions used in the pipelines from pipeline_spec.</p>
+<p>Because these filter functions are not completely static,
+i.e. they should be parameterized first or depend on the input data,
+they are not defined directly, but created factory functions instead.</p>
+<p>These can be used as-is inside of pipeline definitions,
+or as guidance for defining further filtering functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.get_filter_by_bool_fun">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">get_filter_by_bool_fun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bool_fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.get_filter_by_bool_fun" title="Permalink to this definition"></a></dt>
+<dd><p>Return a filter that returns the tokens that are considered True.</p>
+<p>This can be used to filter for stop words, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bool_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – The function to use to analyze the document.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.get_filter_by_frequency">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">get_filter_by_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_open</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.get_filter_by_frequency" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for token properties with document frequency
+inside the given interval.</p>
+<p>This can be used to remove tokens that are too rare to reason about
+or too frequent to carry much meaning.</p>
+<p>See get_words_by_property_frequency for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
+<li><p><strong>property_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]]) – </p></li>
+<li><p><strong>min_num</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>max_num</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>min_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>max_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>interval_open</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.get_filter_by_property">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">get_filter_by_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_properties</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.get_filter_by_property" title="Permalink to this definition"></a></dt>
+<dd><p>A filter that gets tokens based on an arbitrary property.</p>
+<p>This can be used to remove filter based universal POS tags,
+a particular (un)wanted vocabulary of lemmatized tokens, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]]) – The function to use to analyze the document,
+obtaining the property to check for.</p></li>
+<li><p><strong>req_properties</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]) – The collection of required properties.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.get_filter_by_subset_len">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">get_filter_by_subset_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_open</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.get_filter_by_subset_len" title="Permalink to this definition"></a></dt>
+<dd><p>Filter tokens based on the length of document subsets they belong to.</p>
+<p>This can be used to filter based on the length of sentences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subset_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]]) – The function that splits a document
+into a collection of subsets.</p></li>
+<li><p><strong>min_len</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>max_len</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>interval_open</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.get_props_by_document_frequency">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">get_props_by_document_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval_open</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.get_props_by_document_frequency" title="Permalink to this definition"></a></dt>
+<dd><p>Return the words where the corresponding property
+has a document frequency within the given interval.</p>
+<p>Directions that are not given are considered to be unbounded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]]) – The function to use to analyze the documents,
+obtaining the property to base the count on.</p></li>
+<li><p><strong>min_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – The lower bound of the interval, as the relative rate.
+Overrides min_num if given.</p></li>
+<li><p><strong>max_rate</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – The upper bound of the interval, as the relative rate.
+Overrides max_num if given.</p></li>
+<li><p><strong>interval_open</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, default: <code class="docutils literal notranslate"><span class="pre">False</span></code>) – Consider the interval to be open,
+i.e. do not include words exactly at the boundaries.</p></li>
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
+<li><p><strong>min_num</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+<li><p><strong>max_num</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>], default: <code class="docutils literal notranslate"><span class="pre">None</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.filters.negated">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.filters.</span></span><span class="sig-name descname"><span class="pre">negated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.filters.negated" title="Permalink to this definition"></a></dt>
+<dd><p>Return a new filter function that returns the negated index collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fun</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>) – The original filter function to negate.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-nlprep.specs.pipelines">
+<span id="pipelines"></span><h2>Pipelines<a class="headerlink" href="#module-nlprep.specs.pipelines" title="Permalink to this heading"></a></h2>
+<p>A collection of pipelines that were used for various tasks.
+Here, ‘pipeline’ refers to a sequence of filtering functions.</p>
+<p>These can be used as-is, or as guidance for defining new pipelines.
+To apply these pipelines to a document corpus, use the
+filter.apply_filters function.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.pipelines.get_pipeline_generic_topic_modeling">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.pipelines.</span></span><span class="sig-name descname"><span class="pre">get_pipeline_generic_topic_modeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_upos_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_stop_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lemmatize_fun</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignored_upos_tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignored_lemmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_df_interval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.pipelines.get_pipeline_generic_topic_modeling" title="Permalink to this definition"></a></dt>
+<dd><p>Pipeline of filter functions used during pre-processing for topic modeling.</p>
+<ol class="arabic simple">
+<li><p>Filter based on unwanted universal POS tags.</p></li>
+<li><p>Filter out stop words.</p></li>
+<li><p>Filter out unwanted lemmas.</p></li>
+<li><p>Filter out very rare and very frequent words.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>required_df_interval</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – Specification of the document frequency interval
+that tokens must fall into.
+See documentation of filter_specs.get_filter_by_frequency_in_interval.</p></li>
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
+<li><p><strong>get_upos_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – </p></li>
+<li><p><strong>is_stop_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]) – </p></li>
+<li><p><strong>lemmatize_fun</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – </p></li>
+<li><p><strong>ignored_upos_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
+<li><p><strong>ignored_lemmas</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlprep.specs.pipelines.get_pipeline_poc_topic_modeling">
+<span class="sig-prename descclassname"><span class="pre">nlprep.specs.pipelines.</span></span><span class="sig-name descname"><span class="pre">get_pipeline_poc_topic_modeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_df_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'interval_open':</span> <span class="pre">False,</span> <span class="pre">'max_rate':</span> <span class="pre">0.25,</span> <span class="pre">'min_num':</span> <span class="pre">5}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignored_upos_tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'PUNCT',</span> <span class="pre">'SPACE'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignored_lemmas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'&amp;',</span> <span class="pre">'-',</span> <span class="pre">'--',</span> <span class="pre">'ARD',</span> <span class="pre">'ARD-Faktenfinder',</span> <span class="pre">'Altersgruppe',</span> <span class="pre">'Anleitung',</span> <span class="pre">'Ansprache',</span> <span class="pre">'Arbeitsblatt',</span> <span class="pre">'Audiobeitrag',</span> <span class="pre">'BR',</span> <span class="pre">'Beispiel',</span> <span class="pre">'Inhalt',</span> <span class="pre">'Internet-Lexikon',</span> <span class="pre">'Internetseite',</span> <span class="pre">'Klexikon',</span> <span class="pre">'Kompetenz',</span> <span class="pre">'Landesbildungsserver',</span> <span class="pre">'Lerneffekt',</span> <span class="pre">'Lernort',</span> <span class="pre">'Lernpfad',</span> <span class="pre">'Lesepfad',</span> <span class="pre">'Lexikon',</span> <span class="pre">'Link',</span> <span class="pre">'Material',</span> <span class="pre">'Methode',</span> <span class="pre">'Online-Spiel',</span> <span class="pre">'PHSZ',</span> <span class="pre">'Podcast',</span> <span class="pre">'Projekt',</span> <span class="pre">'Sammlung',</span> <span class="pre">'Schritt',</span> <span class="pre">'Schüler',</span> <span class="pre">'Schüler*in',</span> <span class="pre">'Schüler*innen',</span> <span class="pre">'Schüler/-innen',</span> <span class="pre">'Spiel',</span> <span class="pre">'Thema',</span> <span class="pre">'Universität',</span> <span class="pre">'Unterricht',</span> <span class="pre">'Unterrichtsbaustein',</span> <span class="pre">'Unterrichtseinheit',</span> <span class="pre">'Veranschaulichung',</span> <span class="pre">'Verifikationsteam',</span> <span class="pre">'Video',</span> <span class="pre">'Volksschule',</span> <span class="pre">'Wiki',</span> <span class="pre">'YouTube',</span> <span class="pre">'Youtube',</span> <span class="pre">'anhand',</span> <span class="pre">'anwenden',</span> <span class="pre">'behandeln',</span> <span class="pre">'com',</span> <span class="pre">'de',</span> <span class="pre">'dein',</span> <span class="pre">'downloaden',</span> <span class="pre">'eBildungslabor',</span> <span class="pre">'eigentlich',</span> <span class="pre">'einfach',</span> <span class="pre">'einsteigen',</span> <span class="pre">'erfahren',</span> <span class="pre">'frei',</span> <span class="pre">'geben',</span> <span class="pre">'innen',</span> <span class="pre">'interaktiv',</span> <span class="pre">'kindgerecht',</span> <span class="pre">'kostenlos',</span> <span class="pre">'spannend',</span> <span class="pre">'spielerisch',</span> <span class="pre">'thematisieren',</span> <span class="pre">'um',</span> <span class="pre">'umfassend',</span> <span class="pre">'weiterführend',</span> <span class="pre">'zahlreich',</span> <span class="pre">'zeigen',</span> <span class="pre">'|',</span> <span class="pre">'Überblick'}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.specs.pipelines.get_pipeline_poc_topic_modeling" title="Permalink to this definition"></a></dt>
+<dd><p>The particular pipeline used for the PoC topic modeling application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
+<li><p><strong>required_df_interval</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], default: <code class="docutils literal notranslate"><span class="pre">{'min_num':</span> <span class="pre">5,</span> <span class="pre">'max_rate':</span> <span class="pre">0.25,</span> <span class="pre">'interval_open':</span> <span class="pre">False}</span></code>) – </p></li>
+<li><p><strong>ignored_upos_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], default: <code class="docutils literal notranslate"><span class="pre">{'SPACE',</span> <span class="pre">'PUNCT'}</span></code>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="nlprep.html#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nlprep.spacy.html" class="btn btn-neutral float-left" title="spaCy utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 1980, Jonas Opitz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
