@@ -11,8 +11,8 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {inherit system;};
-        nix-filter = self.inputs.nix-filter.lib;
         python = pkgs.python310;
+        nix-filter = self.inputs.nix-filter.lib;
 
         # build the spaCy language processing pipeline as a python package
         de_dep_news_trf = with pkgs.python3Packages;
@@ -30,23 +30,20 @@
             ];
           };
 
-        # declare the python packages used for building, testing & developing
+        ### declare the python packages used for building, docs & development
         python-packages-build = python-packages:
           with python-packages; [
-            # NLP
             de_dep_news_trf
             numpy
             spacy
           ];
-        python-build = python.withPackages python-packages-build;
-
+        
         python-packages-docs = python-packages:
           with python-packages; [
             sphinx
             sphinx-rtd-theme
             sphinx-autodoc-typehints
           ];
-        python-docs = python.withPackages python-packages-docs;
 
         python-packages-devel = python-packages:
           with python-packages; [
@@ -57,19 +54,19 @@
             ipython
             # type checking
             mypy
-            # unit testing
+            # writing tests
             pytest
             pytest-cov
             hypothesis
           ]
           ++ (python-packages-build python-packages)
-          ++ (python-packages-docs python-packages);
-        python-devel = python.withPackages python-packages-devel;
+          ++ (python-packages-docs  python-packages);
 
-        # declare how the python package shall be built
-        nlprep = with python-build.pkgs; buildPythonPackage rec {
+        ### declare how the python package shall be built
+        nlprep = with python.pkgs; buildPythonPackage rec {
           pname = "nlprep";
           version = "0.1.2";
+          # only include the package-related files
           src = nix-filter {
             root = self;
             include = [
@@ -80,17 +77,19 @@
             ];
             exclude = [ (nix-filter.matchExt "pyc") ];
           };
-          propagatedBuildInputs = (python-packages-build python-build.pkgs);
+          propagatedBuildInputs = (python-packages-build python.pkgs);
+          # use pytestCheckHook to run pytest after building
           nativeCheckInputs = [ pytestCheckHook hypothesis ];
         };
 
+        ### declare build system for the documentation
         docs = pkgs.runCommand "docs" {
           buildInputs = [
-            python-docs
+            (python-packages-docs python.pkgs)
             (nlprep.override {doCheck = false;})
           ];
         } (pkgs.writeShellScript "docs.sh" ''
-            sphinx-build -M html ${./docs} $out
+            sphinx-build -b html ${./docs} $out
           ''); 
 
       in {
@@ -100,7 +99,7 @@
         };
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            python-devel
+            (python-packages-devel python.pkgs)
             # python language server
             pkgs.nodePackages.pyright
           ];
