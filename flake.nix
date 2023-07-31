@@ -4,12 +4,14 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    nix-filter.url = "github:numtide/nix-filter";
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {inherit system;};
+        nix-filter = self.inputs.nix-filter.lib;
         python = pkgs.python310;
 
         # build the spaCy language processing pipeline as a python package
@@ -64,10 +66,21 @@
         python-devel = python.withPackages python-packages-devel;
 
         # declare how the python package shall be built
-        nlprep = with python-build.pkgs; buildPythonPackage {
+        nlprep = with python-build.pkgs; buildPythonPackage rec {
           pname = "nlprep";
           version = "0.1.2";
-          src = ./.;
+          src = nix-filter {
+            root = self;
+            include = [
+              pname
+              "test"
+              ./setup.py
+              ./requirements.txt
+            ];
+            exclude = [
+              "${pname}/__pycache__"
+            ];
+          };
           propagatedBuildInputs = (python-packages-build python-build.pkgs);
           nativeCheckInputs = [
             pytestCheckHook
