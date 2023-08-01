@@ -4,26 +4,24 @@ from collections.abc import Callable, Collection, Iterable, Iterator, Set
 from dataclasses import dataclass, field
 from typing import Any, Generic, Protocol, TypeVar
 
-T = TypeVar("T")
+Tokens = tuple[str, ...]
 
 
 @dataclass(frozen=True, eq=True)
 class Document:
     original_text: str
-    original_tokens: tuple[str, ...]
+    original_tokens: Tokens
     selected: frozenset[int]
 
     def __repr__(self) -> str:
         return self.selected_tokens.__repr__()
 
     @property
-    def selected_tokens(self) -> tuple[str, ...]:
+    def selected_tokens(self) -> Tokens:
         return tuple(self.original_tokens[index] for index in self.selected)
 
     @classmethod
-    def fromtext(
-        cls, text: str, tokenize_fun: Callable[[str], tuple[str, ...]]
-    ) -> Document:
+    def fromtext(cls, text: str, tokenize_fun: Callable[[str], Tokens]) -> Document:
         tokens = tokenize_fun(text)
         return Document(
             original_text=text,
@@ -33,7 +31,7 @@ class Document:
 
     @classmethod
     def fromtokens(cls, __iterable: Iterable[str]) -> Document:
-        tokens = tuple(__iterable)
+        tokens = Tokens(__iterable)
         text = " ".join(tokens)
         return Document(
             original_text=text,
@@ -68,15 +66,38 @@ class Filter(Protocol):
 
 Pipeline = Collection[Filter]
 
-class Property_Function(Generic[T]):
+Property = TypeVar("Property")
+
+
+class Property_Function(Protocol[Property]):
     """
     Functions that compute some property for the tokens of the document.
     """
-    def __call__(self, doc: Document) -> Collection[T]:
+
+    def __call__(self, doc: Document) -> Collection[Property]:
         """
         Return the property of each *original* token in the document.
 
         I.e. len(result) == len(doc.original_tokens)
+        """
+        ...
+
+
+class Split_Function(Protocol[Property]):
+    """
+    Functions that compute some property for the tokens of the document,
+    splitting them into nested collections.
+
+    Example: a function that splits a document into its sentences.
+    """
+
+    def __call__(self, doc: Document) -> Collection[Collection[Property]]:
+        """
+        Return the property of each *original* token in the document,
+        organized by the split semantic.
+
+        I.e. the sum of the lengths of the nested collections
+             == len(original_tokens)
         """
         ...
 
