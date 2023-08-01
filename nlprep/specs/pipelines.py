@@ -7,20 +7,23 @@ To apply these pipelines to a document corpus, use the
 filter.apply_filters function.
 """
 from collections.abc import Collection, Callable
-from typing import Any
-from nlprep.types import Document, Pipeline
+from typing import Any, TypeVar
+from nlprep.types import Document, Pipeline, Property_Function
 import nlprep.specs.filters as filters
 import nlprep.specs.collections as cols
 import nlprep.spacy.props as nlp
 
+Upos = TypeVar("Upos")
+Lemma = TypeVar("Lemma")
+
 
 def get_pipeline_generic_topic_modeling(
     docs: Collection[Document],
-    get_upos_fun: Callable[[Document], Collection[str]],
-    is_stop_fun: Callable[[Document], Collection[bool]],
-    lemmatize_fun: Callable[[Document], Collection[str]],
-    ignored_upos_tags: Collection[str],
-    ignored_lemmas: Collection[str],
+    get_upos_fun: Property_Function[Upos],
+    is_stop_fun: Property_Function[bool],
+    lemmatize_fun: Property_Function[Lemma],
+    ignored_upos_tags: Collection[Upos],
+    ignored_lemmas: Collection[Lemma],
     required_df_interval: dict[str, Any],
 ) -> Pipeline:
     """

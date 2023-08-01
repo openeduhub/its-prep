@@ -8,22 +8,15 @@ they are not defined directly, but created factory functions instead.
 These can be used as-is inside of pipeline definitions,
 or as guidance for defining further filtering functions.
 """
-
-from collections.abc import Callable, Collection
-from typing import Any, Optional, Set, TypeVar
+from collections.abc import Collection
+from typing import Optional, Set, TypeVar
 
 import numpy as np
-from nlprep.types import Document, Filter, Property_Function
-
-T = TypeVar("T")
+from nlprep.types import Document, Filter, Property_Function, Split_Function
 
 
 def negated(fun: Filter) -> Filter:
-    """
-    Return a new filter function that returns the negated index collection.
-
-    :param fun: The original filter function to negate.
-    """
+    """Return a new filter function that returns the negated original result"""
 
     def negated_fun(doc: Document) -> Document:
         doc_filtered = fun(doc)
@@ -32,15 +25,18 @@ def negated(fun: Filter) -> Filter:
     return negated_fun
 
 
+Property = TypeVar("Property")
+
+
 def get_filter_by_property(
-    property_fun: Property_Function[T],
-    req_properties: Collection[T],
+    property_fun: Property_Function[Property],
+    req_properties: Collection[Property],
 ) -> Filter:
     """
     A filter that gets tokens based on an arbitrary property.
 
-    This can be used to remove filter based universal POS tags,
-    a particular (un)wanted vocabulary of lemmatized tokens, etc.
+    Examples: filter based universal POS tags,
+              a particular (un)wanted vocabulary of lemmatized tokens, etc.
     """
 
     def filter_fun(doc: Document) -> Document:
@@ -59,7 +55,7 @@ def get_filter_by_bool_fun(bool_fun: Property_Function[bool]) -> Filter:
     """
     Return a filter that returns the tokens that are considered True.
 
-    This can be used to filter for stop words, for example.
+    Example: filter for stop words.
     """
 
     def filter_fun(doc: Document) -> Document:
@@ -84,13 +80,13 @@ def __in_interval(
 
 def get_props_by_document_frequency(
     docs: Collection[Document],
-    property_fun: Property_Function[T],
-    min_num: Optional[float] = None,
-    max_num: Optional[float] = None,
+    property_fun: Property_Function[Property],
+    min_num: Optional[int | float] = None,
+    max_num: Optional[int | float] = None,
     min_rate: Optional[float] = None,
     max_rate: Optional[float] = None,
     interval_open: bool = False,
-) -> Set[T]:
+) -> Set[Property]:
     """
     Return the words where the corresponding property
     has a document frequency within the given interval.
@@ -114,7 +110,7 @@ def get_props_by_document_frequency(
         max_num = len(docs) * max_rate
 
     # helper function to compute document frequencies
-    def get_document_freqs() -> dict[T, int]:
+    def get_document_freqs() -> dict[Property, int]:
         docs_as_sets = [{prop for prop in property_fun(doc)} for doc in docs]
         vocabulary = set().union(*docs_as_sets)
         return {
@@ -132,7 +128,7 @@ def get_props_by_document_frequency(
 
 def get_filter_by_frequency(
     docs: Collection[Document],
-    property_fun: Property_Function[T],
+    property_fun: Property_Function[Property],
     min_num: Optional[int] = None,
     max_num: Optional[int] = None,
     min_rate: Optional[float] = None,
@@ -143,8 +139,8 @@ def get_filter_by_frequency(
     Filter for token properties with document frequency
     inside the given interval.
 
-    This can be used to remove tokens that are too rare to reason about
-    or too frequent to carry much meaning.
+    Example: remove tokens that are too rare to reason about
+             or too frequent to carry much meaning.
 
     See get_words_by_property_frequency for more details.
     """
@@ -163,8 +159,11 @@ def get_filter_by_frequency(
     )
 
 
+T = TypeVar("T")
+
+
 def get_filter_by_subset_len(
-    subset_fun: Callable[[Document], Collection[Collection[T]]],
+    split_fun: Split_Function,
     min_len: Optional[int] = None,
     max_len: Optional[int] = None,
     interval_open: bool = False,
@@ -172,14 +171,11 @@ def get_filter_by_subset_len(
     """
     Filter tokens based on the length of document subsets they belong to.
 
-    This can be used to filter based on the length of sentences.
-
-    :param subset_fun: The function that splits a document
-                       into a collection of subsets.
+    Example: filter based on the length of sentences.
     """
 
     def filter_fun(doc: Document) -> Document:
-        len_by_token = [len(col) for col in subset_fun(doc) for _ in col]
+        len_by_token = [len(col) for col in split_fun(doc) for _ in col]
         return doc.sub_doc(
             {
                 index
