@@ -79,14 +79,6 @@ for result in results:
 
 #+RESULTS: print-results
 
-#+begin_src elisp :results silent :tangle no
-(org-babel-do-load-languages
- 'org-babel-load-languages
- (append org-babel-load-languages '((jupyter . t))))
-(org-babel-jupyter-override-src-block "python")
-(revert-buffer t t)
-#+end_src
-
 ** Data
 Some example texts, from [[https://de.wikipedia.org/wiki/Deutschland][the German Wikipedia page on Germany]].
 #+begin_src python
