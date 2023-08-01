@@ -11,36 +11,74 @@ Note that even though these functions are defined on
 spaCy-specific document representations,
 they will actually act on the internal Document representation.
 """
+from functools import lru_cache
 from collections.abc import Collection, Callable
 from typing import TypeVar
-from nlprep.types import Document
-from nlprep.utils import defaultdict_keyed
+from nlprep.types import Document, Property_Function, Split_Function, Tokens
 import spacy.tokens
 import de_dep_news_trf
 
 nlp = de_dep_news_trf.load()
-DOCUMENT_CACHE: defaultdict_keyed[str, spacy.tokens.Doc] = defaultdict_keyed(nlp)
+sent_nlp = nlp.add_pipe("sentencizer")
 
-T = TypeVar("T")
-
-
-def _raw_into_property(raw_doc: str, prop: str) -> tuple[str, ...]:
-    processed_doc = DOCUMENT_CACHE[raw_doc]
-
-    return tuple(getattr(token, prop) for token in processed_doc)
+SPACY_PROCESSED_TEXT: set[str] = set()
 
 
-def raw_into_words(raw_doc: str) -> tuple[str, ...]:
+@lru_cache(maxsize=2**16)
+def _spacy_doc_from_text(text: str) -> spacy.tokens.Doc:
+    SPACY_PROCESSED_TEXT.add(text)
+    return nlp(text)
+
+
+@lru_cache(maxsize=2**16)
+def _spacy_doc_from_tokens(tokens: Tokens) -> spacy.tokens.Doc:
+    """
+    Helper function to turn tokens into processed spaCy docs,
+    without re-tokenizing them
+    """
+    return spacy.tokens.Doc(vocab=nlp.vocab, words=list(tokens))
+
+
+@lru_cache(maxsize=2**16)
+def _analyze_sents(processed_doc: spacy.tokens.Doc) -> spacy.tokens.Doc:
+    """Helper function to sentencize an already processed document"""
+    return sent_nlp(processed_doc)
+
+
+Property = TypeVar("Property")
+
+
+def _raw_into_property(raw_doc: str, prop: str) -> Tokens:
+    """Helper function to turn a raw document into tokens, based on property"""
+    processed_doc = _spacy_doc_from_text(raw_doc)
+
+    return Tokens(getattr(token, prop) for token in processed_doc)
+
+
+def tokenize_as_words(raw_doc: str) -> Tokens:
     """Tokenize a document into its words"""
     return _raw_into_property(raw_doc, "text")
 
 
-def raw_into_lemmas(raw_doc: str) -> tuple[str, ...]:
+def tokenize_as_lemmas(raw_doc: str) -> Tokens:
     """Tokenize a document into its lemmas"""
     return _raw_into_property(raw_doc, "lemma_")
 
 
-def _from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
+def _document_into_spacy_doc(doc: Document) -> spacy.tokens.Doc:
+    """Transform a document into its analyzed spaCy counterpart."""
+
+    # if the document was tokenized by spaCy, it was stored during this step
+    if doc.original_text in SPACY_PROCESSED_TEXT:
+        return _spacy_doc_from_text(doc.original_text)
+
+    # otherwise, return an analyzed version that was not tokenized again
+    return _spacy_doc_from_tokens(doc.original_tokens)
+
+
+def _property_from_doc(
+    fun: Callable[[spacy.tokens.Doc], Collection[Property]]
+) -> Property_Function[Property]:
     """
     Transform functions that act on processed spaCy documents
     to functions that act on our document representation.
@@ -53,37 +91,56 @@ def _from_doc(fun: Callable[[spacy.tokens.Doc], T]) -> Callable[[Document], T]:
     such that each sub-document does not need to be processed again.
     """
 
-    def wrapped_fun(doc: Document) -> T:
-        return fun(DOCUMENT_CACHE[doc.original_text])
+    def wrapped_fun(doc: Document) -> Collection[Property]:
+        processed_doc = _document_into_spacy_doc(doc)
+        return fun(processed_doc)
 
     return wrapped_fun
 
 
-@_from_doc
+def _sentencizer_from_doc(
+    fun: Callable[[spacy.tokens.Doc], Collection[Collection[Property]]]
+) -> Split_Function[Property]:
+    """
+    Analogous to the decorator for property functions, but for sentencizers.
+
+    Because the default processing pipeline does not necessarily include
+    a sentencizer, run the processed document through one
+    before passing it onto the given function.
+    """
+
+    def wrapped_fun(doc: Document) -> Collection[Collection[Property]]:
+        processed_doc = _document_into_spacy_doc(doc)
+        return fun(_analyze_sents(processed_doc))
+
+    return wrapped_fun
+
+
+@_property_from_doc
 def get_upos(processed_doc: spacy.tokens.Doc) -> Collection[str]:
     """The universal POS tags of each token"""
     return [token.pos_ for token in processed_doc]
 
 
-@_from_doc
+@_property_from_doc
 def is_stop(processed_doc: spacy.tokens.Doc) -> Collection[bool]:
     """Indicators whether each token is a stop word"""
     return [token.is_stop for token in processed_doc]
 
 
-@_from_doc
+@_property_from_doc
 def lemmatize(processed_doc: spacy.tokens.Doc) -> Collection[str]:
     """The lemmatized version of each token"""
     return [token.lemma_ for token in processed_doc]
 
 
-@_from_doc
+@_sentencizer_from_doc
 def into_sentences(processed_doc: spacy.tokens.Doc) -> Collection[Collection[str]]:
     """Split the document by its sentences"""
     return [[token.text for token in sent] for sent in processed_doc.sents]
 
 
-@_from_doc
+@_sentencizer_from_doc
 def into_sentences_lemmatized(
     processed_doc: spacy.tokens.Doc,
 ) -> Collection[Collection[str]]:

@@ -97,7 +97,7 @@ Tokenize the documents using =spaCy=, displaying the tokens using their lemmatiz
 import nlprep.spacy as nlp
 from nlprep import tokenize_documents
 
-(docs := list(tokenize_documents(raw_docs, tokenize_fun=nlp.raw_into_lemmas)))
+(docs := list(tokenize_documents(raw_docs, tokenize_fun=nlp.tokenize_as_lemmas)))
 #+end_src
 
 #+RESULTS:

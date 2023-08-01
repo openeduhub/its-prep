@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
-from typing import TypeVar
+from typing import Optional, TypeVar
 
 T = TypeVar("T")
 _KT = TypeVar("_KT")
@@ -17,21 +17,3 @@ def nest(fun: Callable[[T], T], n: int) -> Callable[[T], T]:
         return x
 
     return nested_fun
-
-
-class defaultdict_keyed(defaultdict[_KT, _VT]):
-    """A default dictionary where the factory depends on the missing key"""
-
-    default_factory: Callable[[_KT], _VT]
-
-    def __init__(self, __factory: Callable[[_KT], _VT]):
-        super().__init__()
-        self.default_factory = __factory
-
-    def __missing__(self, __key: _KT) -> _VT:
-        if not self.default_factory:
-            return super().__missing__(__key)
-
-        value = self.default_factory(__key)
-        self[__key] = value
-        return value
