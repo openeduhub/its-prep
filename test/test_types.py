@@ -1,11 +1,11 @@
 from collections.abc import Callable, Set
-from nlprep.types import Document
+from nlprep.types import Document, Tokens
 from test.strategies import documents, texts, tokenizers, tokens
 from hypothesis import given, strategies as st
 
 
 @given(texts, tokenizers)
-def test_document_from_text(text: str, tokenizer: Callable[[str], tuple[str, ...]]):
+def test_document_from_text(text: str, tokenizer: Callable[[str], Tokens]):
     tokens = tokenizer(text)
     doc = Document.fromtext(text=text, tokenize_fun=tokenizer)
 
@@ -16,7 +16,7 @@ def test_document_from_text(text: str, tokenizer: Callable[[str], tuple[str, ...
 
 
 @given(tokens)
-def test_document_from_tokens(tokens: tuple[str, ...]):
+def test_document_from_tokens(tokens: Tokens):
     doc = Document.fromtokens(tokens)
 
     assert doc.original_tokens == tokens

@@ -2,17 +2,33 @@ from collections.abc import Collection, Callable, Set
 from typing import TypeVar
 
 from numpy import select
-from nlprep.types import Document, Filter
+from nlprep.types import Document, Filter, Property_Function, Tokens
 import hypothesis.strategies as st
 
-# only generate UTF-8
-texts = st.text(st.characters(blacklist_characters=["\ud800"]))
+# fundamental types
+characters = st.characters(max_codepoint=2047)
+texts = st.text(characters)
+texts_non_empty = st.text(characters, min_size=1)
 
-tokens = st.lists(texts).map(lambda x: tuple(x))
+# tokens must not be empty
+tokens = st.lists(texts_non_empty).map(lambda x: tuple(x))
 
 tokenizers = st.functions(like=lambda text: ..., returns=tokens, pure=True)
 
-property_funs = st.functions(like=lambda doc: ..., returns=tokens, pure=True)
+
+@st.composite
+def property_funs(draw) -> Property_Function[str]:
+    # emulate immutable function behavior
+    cache: dict[Tokens, Collection[str]] = dict()
+
+    def fun(doc: Document) -> Collection[str]:
+        n = len(doc.original_tokens)
+        return cache.setdefault(
+            doc.original_tokens, draw(st.lists(texts_non_empty, min_size=n, max_size=n))
+        )
+
+    return fun
+
 
 documents = tokens.map(Document.fromtokens)
 
@@ -29,8 +45,9 @@ def subsets(draw, given_set: Set[int]) -> Set[int]:
 
 
 @st.composite
-def filters(draw):
-    cache = dict()
+def filters(draw) -> Filter:
+    # emulate immutable function behavior
+    cache: dict[str, frozenset[int]] = dict()
 
     def filter_fun(doc: Document) -> Document:
         selected = cache.setdefault(
@@ -47,11 +64,12 @@ def filters(draw):
 
 
 @st.composite
-def filters_unsafe(draw):
-    cache = dict()
+def filters_unsafe(draw) -> Filter:
+    # emulate immutable function behavior
+    cache: dict[Tokens, frozenset[int]] = dict()
 
     def filter_fun(doc: Document) -> Document:
-        selected = cache.setdefault(doc, draw(subsets(doc.selected)))
+        selected = cache.setdefault(doc.selected_tokens, draw(subsets(doc.selected)))
         return doc.sub_doc(selected)
 
     return filter_fun
