@@ -56,7 +56,11 @@ def apply_generic_topic_modeling(
 
     # filter by document frequency of lemmatized tokens
     frequency_pipeline = [
-        filters.get_filter_by_frequency(docs, lemmatize_fun, **required_df_interval)
+        filters.get_filter_by_frequency(
+            docs,
+            lemmatize_fun,
+            **required_df_interval,
+        )
     ]
 
     return list(apply_filters(docs, frequency_pipeline))
@@ -69,6 +73,7 @@ def apply_poc_topic_modeling(
         "min_num": 5,
         "max_rate": 0.25,
         "interval_open": False,
+        "count_only_selected": True,
     },
     ignored_upos_tags: Collection[str] = {"PUNCT", "SPACE"},
     ignored_lemmas=set().union(

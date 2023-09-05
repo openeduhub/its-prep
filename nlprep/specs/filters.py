@@ -8,6 +8,7 @@ they are not defined directly, but created factory functions instead.
 These can be used as-is inside of pipeline definitions,
 or as guidance for defining further filtering functions.
 """
+from collections import defaultdict
 from collections.abc import Collection
 from typing import Optional, Set, TypeVar
 
@@ -86,6 +87,7 @@ def get_props_by_document_frequency(
     min_rate: Optional[float] = None,
     max_rate: Optional[float] = None,
     interval_open: bool = False,
+    count_only_selected: bool = False,
 ) -> Set[Property]:
     """
     Return the words where the corresponding property
@@ -111,12 +113,25 @@ def get_props_by_document_frequency(
 
     # helper function to compute document frequencies
     def get_document_freqs() -> dict[Property, int]:
-        docs_as_sets = [{prop for prop in property_fun(doc)} for doc in docs]
+        docs_as_sets = [
+            {
+                prop
+                for index, prop in enumerate(property_fun(doc))
+                # skip if only counting selected and not selected
+                if not count_only_selected or index in doc.selected
+            }
+            for doc in docs
+        ]
         vocabulary = set().union(*docs_as_sets)
-        return {
-            prop: sum([prop in document for document in docs_as_sets])
-            for prop in vocabulary
-        }
+
+        return defaultdict(
+            # if looking for non-existing property, return 0
+            lambda: 0,
+            {
+                prop: sum([prop in document for document in docs_as_sets])
+                for prop in vocabulary
+            },
+        )
 
     dfs = get_document_freqs()
     return {
@@ -134,6 +149,7 @@ def get_filter_by_frequency(
     min_rate: Optional[float] = None,
     max_rate: Optional[float] = None,
     interval_open: bool = False,
+    count_only_selected: bool = False,
 ) -> Filter:
     """
     Filter for token properties with document frequency
@@ -152,6 +168,7 @@ def get_filter_by_frequency(
         min_rate=min_rate,
         max_rate=max_rate,
         interval_open=interval_open,
+        count_only_selected=count_only_selected,
     )
 
     return get_filter_by_property(
