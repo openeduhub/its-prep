@@ -1,4 +1,4 @@
-from collections.abc import Callable, Set
+from collections.abc import Callable, Collection, Iterable, Set
 from nlprep.types import Document, Tokens
 from test.strategies import documents, texts, tokenizers, tokens
 from hypothesis import given, strategies as st
@@ -41,3 +41,22 @@ def test_document_sub_doc(doc: Document, index_set: Set[int]):
 
     for expected_token in expected_tokens:
         assert expected_token in result.selected_tokens
+
+
+@given(documents)
+def test_document_is_iterable(doc: Document):
+    assert isinstance(doc, Iterable)
+
+
+@given(documents)
+def test_document_is_collection(doc: Document):
+    assert isinstance(doc, Collection)
+
+
+@given(documents)
+def test_document_iterator(doc: Document):
+    tokens = doc.selected_tokens
+    # the selected tokens should be identical
+    # to the result of the document's iterator
+    assert len(tokens) == len(doc)
+    assert set(tokens) == set(doc)

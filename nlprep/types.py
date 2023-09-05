@@ -13,9 +13,6 @@ class Document:
     original_tokens: Tokens
     selected: frozenset[int]
 
-    def __repr__(self) -> str:
-        return self.selected_tokens.__repr__()
-
     @property
     def selected_tokens(self) -> Tokens:
         return tuple(self.original_tokens[index] for index in self.selected)
@@ -45,6 +42,19 @@ class Document:
             original_tokens=self.original_tokens,
             selected=self.selected & selected_indices,
         )
+
+    # a document is a Collection over its selected tokens
+    def __iter__(self) -> Iterator[str]:
+        return self.selected_tokens.__iter__()
+
+    def __len__(self) -> int:
+        return len(self.selected_tokens)
+
+    def __contains__(self, obj) -> bool:
+        return obj in self.selected_tokens
+
+    def __repr__(self) -> str:
+        return self.selected_tokens.__repr__()
 
 
 class Filter(Protocol):
