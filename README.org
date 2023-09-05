@@ -106,10 +106,9 @@ from nlprep import tokenize_documents
 
 ** Pre-Defined Pipelines
 A collection of common pipelines can be found in the =specs.pipelines= sub-module, and a collection of common NLP steps, implemented in [[https://spacy.io/][spaCy]], can be found in =spacy.props=.
-Additionally, we import =apply_filters=, which is a helper function that allows for easy application of pipelines onto unprocessed data.
 #+begin_src python
 import nlprep.spacy as nlp
-from nlprep import apply_filters, pipelines
+from nlprep import pipelines
 #+end_src
 
 Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract data that is relevant to the semantic context of the given document. This is done by
@@ -120,8 +119,7 @@ Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract dat
 
 Since we are only dealing with two documents here, we adjust the required interval for the document frequency in the last step to be unbounded in both directions, thus skipping this step.
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-pipeline = pipelines.get_pipeline_poc_topic_modeling(docs, required_df_interval={})
-list(apply_filters(docs, filters=pipeline))
+pipelines.apply_poc_topic_modeling(docs, required_df_interval={})
 #+end_src
 
 #+RESULTS:
@@ -131,9 +129,11 @@ list(apply_filters(docs, filters=pipeline))
 ** Custom Pipelines
 A pipeline is defined simply as a sequence of filtering functions that take a document as their argument and return a subset of that document. Thus, defining a custom pipeline is equivalent to defining a number of such filtering functions.
 
-In the =specs.filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters from NLP processing steps (e.g. those defined in =spacy.props=).
+In the =filters= sub-module, we have defined multiple factory functions that should make it much easier to define filters from NLP processing steps (e.g. those defined in =spacy.props=).
+
+We also import the ~apply_filters~ helper function, which is a convenient way to apply a pipeline on a document corpus.
 #+begin_src python
-from nlprep import filters
+from nlprep import filters, apply_filters
 #+end_src
 
 Say we wanted to only return only the verbs in the given documents. This could be achieved through

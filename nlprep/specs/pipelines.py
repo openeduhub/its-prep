@@ -8,6 +8,7 @@ filter.apply_filters function.
 """
 from collections.abc import Collection, Callable
 from typing import Any, TypeVar
+from nlprep.core import apply_filters
 from nlprep.types import Document, Pipeline, Property_Function
 import nlprep.specs.filters as filters
 import nlprep.specs.collections as cols
@@ -17,7 +18,7 @@ Upos = TypeVar("Upos")
 Lemma = TypeVar("Lemma")
 
 
-def get_pipeline_generic_topic_modeling(
+def apply_generic_topic_modeling(
     docs: Collection[Document],
     get_upos_fun: Property_Function[Upos],
     is_stop_fun: Property_Function[bool],
@@ -25,7 +26,7 @@ def get_pipeline_generic_topic_modeling(
     ignored_upos_tags: Collection[Upos],
     ignored_lemmas: Collection[Lemma],
     required_df_interval: dict[str, Any],
-) -> Pipeline:
+) -> Collection[Document]:
     """
     Pipeline of filter functions used during pre-processing for topic modeling.
 
@@ -39,7 +40,8 @@ def get_pipeline_generic_topic_modeling(
       that tokens must fall into.
       See documentation of filter_specs.get_filter_by_frequency_in_interval.
     """
-    return [
+    # filter by everything but document frequency
+    initial_pipeline = [
         # filter by upos tags
         filters.negated(
             filters.get_filter_by_property(get_upos_fun, ignored_upos_tags)
@@ -48,12 +50,19 @@ def get_pipeline_generic_topic_modeling(
         filters.negated(filters.get_filter_by_bool_fun(is_stop_fun)),
         # filter by ignored lemmas
         filters.negated(filters.get_filter_by_property(lemmatize_fun, ignored_lemmas)),
-        # filter by document frequency of lemmatized tokens
-        filters.get_filter_by_frequency(docs, lemmatize_fun, **required_df_interval),
     ]
 
+    docs = list(apply_filters(docs, initial_pipeline))
 
-def get_pipeline_poc_topic_modeling(
+    # filter by document frequency of lemmatized tokens
+    frequency_pipeline = [
+        filters.get_filter_by_frequency(docs, lemmatize_fun, **required_df_interval)
+    ]
+
+    return list(apply_filters(docs, frequency_pipeline))
+
+
+def apply_poc_topic_modeling(
     docs: Collection[Document],
     *,
     required_df_interval: dict[str, Any] = {
@@ -69,9 +78,9 @@ def get_pipeline_poc_topic_modeling(
         cols.sources,
         cols.target_audiences,
     ),
-) -> Pipeline:
+) -> Collection[Document]:
     """The particular pipeline used for the PoC topic modeling application."""
-    return get_pipeline_generic_topic_modeling(
+    return apply_generic_topic_modeling(
         docs,
         lemmatize_fun=nlp.lemmatize,
         get_upos_fun=nlp.get_upos,
