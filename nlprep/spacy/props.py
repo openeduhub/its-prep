@@ -14,11 +14,12 @@ they will actually act on the internal Document representation.
 from functools import lru_cache
 from collections.abc import Collection, Callable
 from typing import TypeVar
+import de_core_news_md
 from nlprep.types import Document, Property_Function, Split_Function, Tokens
 import spacy.tokens
-import de_dep_news_trf
 
-nlp = de_dep_news_trf.load()
+# spacy NLP pipelines / models
+nlp = de_core_news_md.load()
 sent_nlp = nlp.add_pipe("sentencizer")
 
 SPACY_PROCESSED_TEXT: set[str] = set()

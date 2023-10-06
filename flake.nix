@@ -16,14 +16,17 @@
 
         # build the spaCy language processing pipeline as a python package
         de_dep_news_trf = py-pkgs: py-pkgs.buildPythonPackage rec {
-          pname = "de_dep_news_trf";
+          pname = "de_core_news_md";
           version = "3.5.0";
           src = pkgs.fetchzip {
             url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
-            hash = "sha256-MleftGMj+VK8hAE+EOg0VhtFUg/oOH3grPbRzklyiVE=";
+            hash = "sha256-6HfAX7qe2D27XpU0+KrCpRtHbDdbNWowW3/2PVKWcBI=";
           };
           doCheck = false;
-          propagatedBuildInputs = with py-pkgs; [ spacy spacy-transformers ];
+          propagatedBuildInputs = with py-pkgs; [
+            spacy
+            # spacy-transformers
+          ];
         };
 
         ### declare the python packages used for building, docs & development
