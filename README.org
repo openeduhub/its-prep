@@ -38,9 +38,9 @@ Then, simply include its default package in your Python environment, e.g.
 {
   outputs = { self, nixpkgs, ... }:
     let
-      nlprep = self.inputs.nlprep.defaultPackage.${system};
+      nlprep = self.inputs.nlprep.packages.default.${system};
 
-      python-packages = python-packages: [ nlprep ];
+      python-packages = py-pkgs: [ nlprep ];
       local-python = pkgs.python3.withPackages python-packages;
     in
       {...};
