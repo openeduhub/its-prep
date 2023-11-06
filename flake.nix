@@ -16,11 +16,11 @@
 
         # build the spaCy language processing pipeline as a python package
         de_dep_news_trf = py-pkgs: py-pkgs.buildPythonPackage rec {
-          pname = "de_core_news_md";
-          version = "3.5.0";
+          pname = "de_core_news_lg";
+          version = "3.7.0";
           src = pkgs.fetchzip {
             url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
-            hash = "sha256-6HfAX7qe2D27XpU0+KrCpRtHbDdbNWowW3/2PVKWcBI=";
+            hash = "sha256-oksQXT/QbUno4y0l5t04FckWNULylLtX9spvgBsaNR0=";
           };
           doCheck = false;
           propagatedBuildInputs = with py-pkgs; [
@@ -64,7 +64,7 @@
         ### declare how the python package shall be built
         nlprep-lib = py-pkgs: py-pkgs.buildPythonPackage rec {
           pname = "nlprep";
-          version = "0.1.2";
+          version = "0.1.3";
           # only include the package-related files
           src = nix-filter {
             root = self;

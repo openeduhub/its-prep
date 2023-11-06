@@ -101,8 +101,8 @@ from nlprep import tokenize_documents
 #+end_src
 
 #+RESULTS:
-: ['Deutschland', 'sein', 'ein', 'Bundesstaat', 'in', 'Mitteleuropa', '--', 'er', 'haben', '16', 'Bundesland', 'und', 'sein', 'als', 'freiheitlich-demokratisch', 'und', 'sozial', 'Rechtsstaat', 'verfassn', '--', 'der', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'der', 'jung', 'Ausprägung', 'der', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', '--', 'Bundeshauptstadt', 'und', 'Regierungssitz', 'sein', 'Berlin', '--', 'Deutschland', 'grenzen', 'an', 'neun', 'Staat', '--', 'es', 'haben', 'Anteil', 'an', 'der', 'Nord', 'und', 'Ostsee', 'in', 'Norden', 'sowie', 'der', 'Bodensee', 'und', 'der', 'Alpen', 'in', 'Süden', '--', 'es', 'liegen', 'in', 'der', 'gemäßigt', 'Klimazone', 'und', 'verfügen', 'über', '16', 'National', 'und', 'mehr', 'als', '100', 'Naturpark', '--']
-: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaat', '--', 'der', 'bevölkerungsreich', 'deutsch', 'Stadt', 'sein', 'Berlin', '--', 'weit', 'Metropole', 'mit', 'mehr', 'als', 'ein', 'Million', 'Einwohner', 'sein', 'Hamburg', '--', 'München', 'und', 'Köln', '--', 'der', 'groß', 'Ballungsraum', 'sein', 'der', 'Ruhrgebiet', '--', 'Frankfurt', 'an', 'Main', 'sein', 'als', 'europäisch', 'Finanzzentrum', 'von', 'global', 'Bedeutung', '--', 'der', 'Geburtenrate', 'liegen', 'bei', '1,58', 'Kind', 'pro', 'Frau', '--', '2021', '--', '--']
+: ['Deutschland', 'sein', 'ein', 'Bundesstaat', 'in', 'Mitteleuropa', '--', 'er', 'haben', '16', 'Bundesland', 'und', 'sein', 'als', 'freiheitlich-demokratischer', 'und', 'sozial', 'Rechtsstaat', 'verfassen', '--', 'der', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'der', 'jung', 'Ausprägung', 'der', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', '--', 'Bundeshauptstadt', 'und', 'Regierungssitz', 'sein', 'Berlin', '--', 'Deutschland', 'grenzen', 'an', 'neun', 'Staat', '--', 'es', 'haben', 'Anteil', 'an', 'der', 'Nord', 'und', 'Ostsee', 'in', 'Norden', 'sowie', 'der', 'Bodensee', 'und', 'der', 'Alpen', 'in', 'Süden', '--', 'es', 'liegen', 'in', 'der', 'gemäßigt', 'Klimazone', 'und', 'verfügen', 'über', '16', 'National', 'und', 'mehr', 'als', '100', 'Naturpark', '--']
+: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaate', '--', 'der', 'bevölkerungsreichste', 'deutsch', 'Stadt', 'sein', 'Berlin', '--', 'weit', 'Metropole', 'mit', 'mehr', 'als', 'ein', 'Million', 'Einwohner', 'sein', 'Hamburg', '--', 'München', 'und', 'Köln', '--', 'der', 'groß', 'Ballungsraum', 'sein', 'der', 'Ruhrgebiet', '--', 'Frankfurt', 'an', 'Main', 'sein', 'als', 'europäisch', 'Finanzzentrum', 'von', 'global', 'Bedeutung', '--', 'der', 'Geburtenrate', 'liegen', 'bei', '1,58', 'Kind', 'pro', 'Frau', '--', '2021', '--', '--']
 
 ** Pre-Defined Pipelines
 A collection of common pipelines can be found in the =specs.pipelines= sub-module, and a collection of common NLP steps, implemented in [[https://spacy.io/][spaCy]], can be found in =spacy.props=.
@@ -123,8 +123,8 @@ pipelines.apply_poc_topic_modeling(docs, required_df_interval={})
 #+end_src
 
 #+RESULTS:
-: ['Deutschland', 'Bundesstaat', 'Mitteleuropa', '16', 'Bundesland', 'freiheitlich-demokratisch', 'sozial', 'Rechtsstaat', 'verfassn', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'jung', 'Ausprägung', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', 'Bundeshauptstadt', 'Regierungssitz', 'Berlin', 'Deutschland', 'grenzen', 'Staat', 'Anteil', 'Nord', 'Ostsee', 'Norden', 'Bodensee', 'Alpen', 'Süden', 'liegen', 'gemäßigt', 'Klimazone', 'verfügen', '16', 'National', '100', 'Naturpark']
-: ['heutig', 'Deutschland', 'circa', '84,4', 'Million', 'Einwohner', 'zählen', 'Fläche', '357.588', 'Quadratkilometer', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'dicht', 'besiedelt', 'Flächenstaat', 'bevölkerungsreich', 'deutsch', 'Stadt', 'Berlin', 'Metropole', 'Million', 'Einwohner', 'Hamburg', 'München', 'Köln', 'groß', 'Ballungsraum', 'Ruhrgebiet', 'Frankfurt', 'Main', 'europäisch', 'Finanzzentrum', 'global', 'Bedeutung', 'Geburtenrate', 'liegen', '1,58', 'Kind', 'pro', 'Frau', '2021']
+: ['Deutschland', 'Bundesstaat', 'Mitteleuropa', '16', 'Bundesland', 'freiheitlich-demokratischer', 'sozial', 'Rechtsstaat', 'verfassen', '1949', 'gegründet', 'Bundesrepublik', 'Deutschland', 'stellen', 'jung', 'Ausprägung', '1871', 'erstmals', 'begründet', 'deutsch', 'Nationalstaat', 'dar', 'Bundeshauptstadt', 'Regierungssitz', 'Berlin', 'Deutschland', 'grenzen', 'Staat', 'Anteil', 'Nord', 'Ostsee', 'Norden', 'Bodensee', 'Alpen', 'Süden', 'liegen', 'gemäßigt', 'Klimazone', 'verfügen', '16', 'National', '100', 'Naturpark']
+: ['heutig', 'Deutschland', 'circa', '84,4', 'Million', 'Einwohner', 'zählen', 'Fläche', '357.588', 'Quadratkilometer', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'dicht', 'besiedelt', 'Flächenstaate', 'bevölkerungsreichste', 'deutsch', 'Stadt', 'Berlin', 'Metropole', 'Million', 'Einwohner', 'Hamburg', 'München', 'Köln', 'groß', 'Ballungsraum', 'Ruhrgebiet', 'Frankfurt', 'Main', 'europäisch', 'Finanzzentrum', 'global', 'Bedeutung', 'Geburtenrate', 'liegen', '1,58', 'Kind', 'pro', 'Frau', '2021']
 
 ** Custom Pipelines
 A pipeline is defined simply as a sequence of filtering functions that take a document as their argument and return a subset of that document. Thus, defining a custom pipeline is equivalent to defining a number of such filtering functions.
@@ -147,8 +147,8 @@ list(apply_filters(docs, only_verbs_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['liegen', 'haben', 'verfügen', 'grenzen', 'verfassn', 'haben', 'stellen']
-: ['zählen', 'haben', 'liegen']
+: ['liegen', 'verfügen', 'grenzen', 'verfassen', 'stellen']
+: ['zählen', 'liegen']
 
 Maybe we also want to filter out stop words. For this, we utilize =filters.negated=, which modifies a given filter function such that its results will be removed, rather than kept:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
@@ -160,7 +160,7 @@ list(apply_filters(docs, non_stop_verbs_pipeline))
 #+end_src
 
 #+RESULTS:
-: ['liegen', 'verfügen', 'grenzen', 'verfassn', 'stellen']
+: ['liegen', 'verfügen', 'grenzen', 'verfassen', 'stellen']
 : ['zählen', 'liegen']
 
 Finally, we could only include sentences that are at least 20 tokens long:
@@ -172,7 +172,7 @@ list(apply_filters(docs, long_sents_pipeline))
 
 #+RESULTS:
 : ['Deutschland', 'grenzen', 'an', 'neun', 'Staat', '--', 'es', 'haben', 'Anteil', 'an', 'der', 'Nord', 'und', 'Ostsee', 'in', 'Norden', 'sowie', 'der', 'Bodensee', 'und', 'der', 'Alpen', 'in', 'Süden', '--']
-: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaat', '--']
+: ['der', 'heutig', 'Deutschland', 'haben', 'circa', '84,4', 'Million', 'Einwohner', 'und', 'zählen', 'bei', 'ein', 'Fläche', 'von', '357.588', 'Quadratkilometer', 'mit', 'durchschnittlich', '236', 'Einwohner', 'pro', 'Quadratkilometer', 'zu', 'der', 'dicht', 'besiedelt', 'Flächenstaate', '--']
 
 And then only consider the non-stop verbs of those sentences:
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
