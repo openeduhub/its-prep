@@ -14,9 +14,9 @@ To install this package through ~pip~, it should be sufficient to run
 pip install git+https://github.com/openeduhub/nlprep.git@main
 #+end_src
 
-Note that you will have to manually ensure that [[https://huggingface.co/spacy/de_dep_news_trf][de_dep_news_trf]] is installed, e.g. through
+Note that you will have to manually ensure that [[https://huggingface.co/spacy/de_dep_news_trf][de_core_news_lg]] is installed, e.g. through
 #+begin_src sh
-python -m spacy download de_dep_news_trf
+python -m spacy download de_core_news_lg
 #+end_src
 
 ** In another Nix Flake
