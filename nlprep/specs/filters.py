@@ -8,7 +8,7 @@ they are not defined directly, but created factory functions instead.
 These can be used as-is inside of pipeline definitions,
 or as guidance for defining further filtering functions.
 """
-from collections import defaultdict
+from collections import defaultdict, Counter
 from collections.abc import Collection
 from typing import Optional, Set, TypeVar
 
@@ -112,26 +112,21 @@ def get_props_by_document_frequency(
         max_num = len(docs) * max_rate
 
     # helper function to compute document frequencies
-    def get_document_freqs() -> dict[Property, int]:
+    def get_document_freqs() -> Counter[Property]:
         docs_as_sets = [
             {
                 prop
                 for index, prop in enumerate(property_fun(doc))
-                # skip if only counting selected and not selected
+                # skip if only counting selected and index is not selected
                 if not count_only_selected or index in doc.selected
             }
             for doc in docs
         ]
-        vocabulary = set().union(*docs_as_sets)
 
-        return defaultdict(
-            # if looking for non-existing property, return 0
-            lambda: 0,
-            {
-                prop: sum([prop in document for document in docs_as_sets])
-                for prop in vocabulary
-            },
-        )
+        document_freqs: Counter[Property] = Counter()
+        [document_freqs.update(doc) for doc in docs_as_sets]
+
+        return document_freqs
 
     dfs = get_document_freqs()
     return {
