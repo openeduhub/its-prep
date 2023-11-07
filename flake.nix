@@ -17,16 +17,19 @@
         # build the spaCy language processing pipeline as a python package
         de_dep_news_trf = py-pkgs: py-pkgs.buildPythonPackage rec {
           pname = "de_core_news_lg";
-          version = "3.7.0";
+          version =
+            if "3.8" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.7" then "3.7.0" else
+            if "3.6" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.5" then "3.5.0" else
+            builtins.throw "Unsupported spacy version";
           src = pkgs.fetchzip {
             url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
-            hash = "sha256-oksQXT/QbUno4y0l5t04FckWNULylLtX9spvgBsaNR0=";
+            hash =
+              if "3.8" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.7" then "sha256-oksQXT/QbUno4y0l5t04FckWNULylLtX9spvgBsaNR0=" else
+              if "3.6" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.5" then "sha256-oOrxOoe+SyleTsDO9WYB25Vvs4LX6B4aJPlGbMRsAk4=" else
+              builtins.throw "Unsupported spacy version";
           };
           doCheck = false;
-          propagatedBuildInputs = with py-pkgs; [
-            spacy
-            # spacy-transformers
-          ];
+          propagatedBuildInputs = with py-pkgs; [ spacy ];
         };
 
         ### declare the python packages used for building, docs & development
