@@ -1,4 +1,7 @@
 from collections.abc import Callable, Collection
+import functools
+from typing import Text
+from nlprep.core import tokenize_documents
 from nlprep.types import Document, Property_Function, Split_Function, Tokens
 import test.strategies as nlp_st
 from pathlib import Path
@@ -85,3 +88,44 @@ def test_tokens_cache_storage(tokens: Tokens):
     assert tokens in nlp.utils.tokens_to_doc_cache
     for token_doc, token_cache in zip(doc, nlp.utils.tokens_to_doc_cache[tokens]):
         assert str(token_doc) == str(token_cache)
+
+
+@given(nlp_st.texts)
+def test_noun_chunks(text: str):
+    # the tested function only works for documents tokenized by spacy directly
+    doc = list(tokenize_documents([text], nlp.tokenize_as_words))[0]
+    chunks = nlp.noun_chunks(doc)
+
+    # property functions must have the same length as the original document
+    assert len(chunks) == len(doc)
+
+
+def test_noun_chunks_without_nouns():
+    text = "gehen, laufen, schwimmen"
+    doc = list(tokenize_documents([text], nlp.tokenize_as_words))[0]
+    chunks = nlp.noun_chunks(doc)
+
+    assert all(chunk is None for chunk in chunks)
+
+
+def test_noun_chunks_with_nouns():
+    text = "Ein hungriger Hund geht in einem schönen See baden."
+    doc = list(tokenize_documents([text], nlp.tokenize_as_words))[0]
+    chunks = nlp.noun_chunks(doc)
+
+    hund_chunks = chunks[:3]
+    see_chunks = chunks[5:8]
+    none_chunks = list(chunks[3:5]) + [chunks[-1]]
+
+    # assert that the correct tokens are assigned Nones / ints
+    assert all(chunk is not None for chunk in hund_chunks)
+    assert all(chunk is not None for chunk in see_chunks)
+    assert all(chunk is None for chunk in none_chunks)
+
+    # assert that all chunk IDs are correct
+    assert all(
+        chunk_a == chunk_b for chunk_a, chunk_b in zip(hund_chunks, hund_chunks[1:])
+    )
+    assert all(
+        chunk_a == chunk_b for chunk_a, chunk_b in zip(see_chunks, see_chunks[1:])
+    )

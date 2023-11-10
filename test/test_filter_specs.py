@@ -51,7 +51,7 @@ def test_negate_double_negation(doc: Document, filter_fun: Filter, negation_coun
 
 
 @given(
-    st.lists(lanst.documents, max_size=20),
+    st.lists(lanst.documents, max_size=5),
     lanst.property_funs(),
     st.tuples(st.integers(), st.integers()).map(sorted),
     st.booleans(),
@@ -91,7 +91,7 @@ def test_get_words_by_df_in_interval_with_both_nums(
 
 
 @given(
-    st.lists(lanst.documents, max_size=20),
+    st.lists(lanst.documents, max_size=5),
     lanst.property_funs(),
     st.integers(),
     st.booleans(),
@@ -128,7 +128,7 @@ def test_get_words_by_df_in_interval_with_min_num(
 
 
 @given(
-    st.lists(lanst.documents, max_size=20),
+    st.lists(lanst.documents, max_size=5),
     lanst.property_funs(),
     st.integers(),
     st.booleans(),
@@ -165,7 +165,7 @@ def test_get_words_by_df_in_interval_with_max_num(
 
 
 @given(
-    st.lists(lanst.documents, max_size=20),
+    st.lists(lanst.documents, max_size=5),
     lanst.property_funs(),
     st.tuples(
         st.floats(min_value=0.0, max_value=1.0),

@@ -57,3 +57,38 @@ def into_sentences_lemmatized(
 ) -> list[list[str]]:
     """Split the document by its sentences, with lemmatization"""
     return [[token.lemma_ for token in sent] for sent in processed_doc.sents]
+
+
+@utils.property_from_doc
+def noun_chunks(processed_doc: spacy.tokens.Doc) -> list[int | None]:
+    """
+    Annotate the given tokens with the noun chunks they belong to.
+
+    If a token does not belong to a noun chunk, it is assigned None.
+    NOTE: the given document has to have been tokenized by spaCy!
+    """
+    chunks = list(processed_doc.noun_chunks)
+
+    if len(chunks) == 0:
+        return [None for _ in processed_doc]
+
+    res: list[int | None] = []
+    cur_chunk = 0
+    chunk_was_visited = [False for _ in chunks]
+    for token in processed_doc:
+        # all noun chunks have been searched through
+        if cur_chunk >= len(chunks):
+            res.append(None)
+            continue
+
+        if token in chunks[cur_chunk]:
+            res.append(cur_chunk)
+            chunk_was_visited[cur_chunk] = True
+            continue
+
+        if chunk_was_visited[cur_chunk]:
+            cur_chunk += 1
+
+        res.append(None)
+
+    return res
