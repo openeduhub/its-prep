@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Collection, Iterable, Iterator, Set
-from dataclasses import dataclass, field
-from typing import Any, Generic, Protocol, TypeVar
+from collections.abc import Callable, Collection, Iterable, Iterator, Sequence, Set
+from dataclasses import dataclass
+from typing import Protocol, TypeVar
 
 Tokens = tuple[str, ...]
 
@@ -74,9 +74,9 @@ class Filter(Protocol):
         ...
 
 
-Pipeline = Collection[Filter]
+Pipeline = Sequence[Filter]
 
-Property = TypeVar("Property")
+Property = TypeVar("Property", covariant=True)
 
 
 class Property_Function(Protocol[Property]):
@@ -84,7 +84,7 @@ class Property_Function(Protocol[Property]):
     Functions that compute some property for the tokens of the document.
     """
 
-    def __call__(self, doc: Document) -> Collection[Property]:
+    def __call__(self, doc: Document) -> Sequence[Property]:
         """
         Return the property of each *original* token in the document.
 
@@ -101,7 +101,7 @@ class Split_Function(Protocol[Property]):
     Example: a function that splits a document into its sentences.
     """
 
-    def __call__(self, doc: Document) -> Collection[Collection[Property]]:
+    def __call__(self, doc: Document) -> Sequence[Sequence[Property]]:
         """
         Return the property of each *original* token in the document,
         organized by the split semantic.

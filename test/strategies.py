@@ -1,9 +1,7 @@
-from collections.abc import Collection, Callable, Set
-from typing import TypeVar
+from collections.abc import Sequence, Set
 
-from numpy import select
-from nlprep.types import Document, Filter, Property_Function, Tokens
 import hypothesis.strategies as st
+from nlprep.types import Document, Filter, Property_Function, Tokens
 
 # fundamental types
 characters = st.characters(max_codepoint=2047)
@@ -19,9 +17,9 @@ tokenizers = st.functions(like=lambda text: ..., returns=tokens, pure=True)
 @st.composite
 def property_funs(draw) -> Property_Function[str]:
     # emulate immutable function behavior
-    cache: dict[Tokens, Collection[str]] = dict()
+    cache: dict[Tokens, Sequence[str]] = dict()
 
-    def fun(doc: Document) -> Collection[str]:
+    def fun(doc: Document) -> Sequence[str]:
         n = len(doc.original_tokens)
         return cache.setdefault(
             doc.original_tokens, draw(st.lists(texts_non_empty, min_size=n, max_size=n))

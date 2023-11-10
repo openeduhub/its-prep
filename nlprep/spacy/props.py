@@ -11,14 +11,16 @@ Note that even though these functions are defined on
 spaCy-specific document representations,
 they will actually act on the internal Document representation.
 """
+from collections.abc import Callable, Sequence
 from functools import lru_cache
-from collections.abc import Collection, Callable
+from pathlib import Path
 from typing import TypeVar
+
 import de_core_news_lg
 from nlprep.types import Document, Property_Function, Split_Function, Tokens
 from nlprep.utils import Spacy_defaultdict
+
 import spacy.tokens
-from pathlib import Path
 
 # spacy NLP pipelines / models
 nlp = de_core_news_lg.load()
@@ -140,7 +142,7 @@ def _document_into_spacy_doc(doc: Document) -> spacy.tokens.Doc:
 
 
 def _property_from_doc(
-    fun: Callable[[spacy.tokens.Doc], Collection[Property]]
+    fun: Callable[[spacy.tokens.Doc], Sequence[Property]]
 ) -> Property_Function[Property]:
     """
     Transform functions that act on processed spaCy documents
@@ -154,7 +156,7 @@ def _property_from_doc(
     such that each sub-document does not need to be processed again.
     """
 
-    def wrapped_fun(doc: Document) -> Collection[Property]:
+    def wrapped_fun(doc: Document) -> Sequence[Property]:
         processed_doc = _document_into_spacy_doc(doc)
         return fun(processed_doc)
 
@@ -162,7 +164,7 @@ def _property_from_doc(
 
 
 def _sentencizer_from_doc(
-    fun: Callable[[spacy.tokens.Doc], Collection[Collection[Property]]]
+    fun: Callable[[spacy.tokens.Doc], Sequence[Sequence[Property]]]
 ) -> Split_Function[Property]:
     """
     Analogous to the decorator for property functions, but for sentencizers.
@@ -172,7 +174,7 @@ def _sentencizer_from_doc(
     before passing it onto the given function.
     """
 
-    def wrapped_fun(doc: Document) -> Collection[Collection[Property]]:
+    def wrapped_fun(doc: Document) -> Sequence[Sequence[Property]]:
         processed_doc = _document_into_spacy_doc(doc)
         return fun(_analyze_sents(processed_doc))
 
