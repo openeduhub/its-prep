@@ -6,13 +6,14 @@ These can be used as-is, or as guidance for defining new pipelines.
 To apply these pipelines to a document corpus, use the
 filter.apply_filters function.
 """
-from collections.abc import Collection, Callable
+from collections.abc import Collection
 from typing import Any, TypeVar
-from nlprep.core import apply_filters
-from nlprep.types import Document, Pipeline, Property_Function
-import nlprep.specs.filters as filters
-import nlprep.specs.collections as cols
+
 import nlprep.spacy.props as nlp
+import nlprep.specs.collections as cols
+import nlprep.specs.filters as filters
+from nlprep.core import apply_filters
+from nlprep.types import Document, Property_Function
 
 Upos = TypeVar("Upos")
 Lemma = TypeVar("Lemma")
@@ -26,7 +27,7 @@ def apply_generic_topic_modeling(
     ignored_upos_tags: Collection[Upos],
     ignored_lemmas: Collection[Lemma],
     required_df_interval: dict[str, Any],
-) -> Collection[Document]:
+) -> list[Document]:
     """
     Pipeline of filter functions used during pre-processing for topic modeling.
 
@@ -83,7 +84,7 @@ def apply_poc_topic_modeling(
         cols.sources,
         cols.target_audiences,
     ),
-) -> Collection[Document]:
+) -> list[Document]:
     """The particular pipeline used for the PoC topic modeling application."""
     return apply_generic_topic_modeling(
         docs,
