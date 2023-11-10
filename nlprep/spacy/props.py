@@ -180,25 +180,25 @@ def _sentencizer_from_doc(
 
 
 @_property_from_doc
-def get_upos(processed_doc: spacy.tokens.Doc) -> Collection[str]:
+def get_upos(processed_doc: spacy.tokens.Doc) -> list[str]:
     """The universal POS tags of each token"""
     return [token.pos_ for token in processed_doc]
 
 
 @_property_from_doc
-def is_stop(processed_doc: spacy.tokens.Doc) -> Collection[bool]:
+def is_stop(processed_doc: spacy.tokens.Doc) -> list[bool]:
     """Indicators whether each token is a stop word"""
     return [token.is_stop for token in processed_doc]
 
 
 @_property_from_doc
-def lemmatize(processed_doc: spacy.tokens.Doc) -> Collection[str]:
+def lemmatize(processed_doc: spacy.tokens.Doc) -> list[str]:
     """The lemmatized version of each token"""
     return [token.lemma_ for token in processed_doc]
 
 
 @_sentencizer_from_doc
-def into_sentences(processed_doc: spacy.tokens.Doc) -> Collection[Collection[str]]:
+def into_sentences(processed_doc: spacy.tokens.Doc) -> list[list[str]]:
     """Split the document by its sentences"""
     return [[token.text for token in sent] for sent in processed_doc.sents]
 
@@ -206,6 +206,6 @@ def into_sentences(processed_doc: spacy.tokens.Doc) -> Collection[Collection[str
 @_sentencizer_from_doc
 def into_sentences_lemmatized(
     processed_doc: spacy.tokens.Doc,
-) -> Collection[Collection[str]]:
+) -> list[list[str]]:
     """Split the document by its sentences, with lemmatization"""
     return [[token.lemma_ for token in sent] for sent in processed_doc.sents]
