@@ -193,13 +193,13 @@ list(apply_filters(docs, non_stop_verbs_pipeline + long_sents_pipeline))
 : ['zählen']
 
 ** Persistent Storage
-Because the text analysis part of the =spaCy= module can take a very long time, especially for large corpora, it can be helpful to store the results for later analyses (e.g. re-running the pipeline at a later date, modifying the pipeline, etc.). To do this, the =nlprep.spacy.props= sub-module offers two helper functions: ~save_caches~ and ~load_caches~.
+Because the text analysis part of the =spaCy= module can take a very long time, especially for large corpora, it can be helpful to store the results for later analyses (e.g. re-running the pipeline at a later date, modifying the pipeline, etc.). To do this, the =nlprep.spacy.utils= sub-module offers two helper functions: ~save_caches~ and ~load_caches~.
 
 With ~save_caches~, we can efficiently store all of the analyzed texts for later use. The optional parameter =file_prefix= lets us more easily identify the automatically created files.
 #+begin_src python
 from pathlib import Path
 # save the caches to /tmp
-nlp.save_caches(Path("/tmp/"), file_prefix="nlprep-demo")
+nlp.utils.save_caches(Path("/tmp/"), file_prefix="nlprep-demo")
 #+end_src
 
 The example above created the following files:
@@ -218,5 +218,5 @@ At a later date, we can now load these cached intermediary results through the ~
 import nlprep.spacy.props as nlp
 from pathlib import Path
 # load the caches from /tmp
-nlp.load_caches(Path("/tmp/"), file_prefix="nlprep-demo")
+nlp.utils.load_caches(Path("/tmp/"), file_prefix="nlprep-demo")
 #+end_src
