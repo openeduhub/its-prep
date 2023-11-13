@@ -62,12 +62,17 @@ def test_tokens_cache(tokens: Tokens):
 def test_text_cache_storage(text: str):
     doc = nlp.tokenize_as_words(text)
 
+    path = Path("/tmp/nlprep-test")
+    path.mkdir(parents=True, exist_ok=True)
+
     # store the cache
-    nlp.utils.save_caches(Path("/tmp"), file_prefix="pytest")
+    nlp.utils.save_caches(path, file_prefix="pytest")
     # delete the text from the cache
     del nlp.utils.text_to_doc_cache[text]
     # load the cache
-    nlp.utils.load_caches(Path("/tmp"), file_prefix="pytest")
+    nlp.utils.load_caches(path, file_prefix="pytest")
+    # delete the cache files
+    [file.unlink() for file in path.glob("pytest*")]
 
     assert text in nlp.utils.text_to_doc_cache
     for token_doc, token_cache in zip(doc, nlp.utils.text_to_doc_cache[text]):
