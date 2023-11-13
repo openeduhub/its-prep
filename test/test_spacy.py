@@ -1,13 +1,11 @@
 from collections.abc import Callable, Collection
-import functools
-from typing import Text
 from nlprep.core import tokenize_documents
 from nlprep.types import Document, Property_Function, Split_Function, Tokens
 import test.strategies as nlp_st
 from pathlib import Path
 
 import nlprep.spacy.props as nlp
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 
@@ -95,6 +93,33 @@ def test_tokens_cache_storage(tokens: Tokens):
         assert str(token_doc) == str(token_cache)
 
 
+@settings(deadline=None)
+@given(st.booleans(), st.booleans())
+def test_tokenize_merges(merge_named_entities: bool, merge_noun_chunks: bool):
+    text = "Deutschland ist ein Bundesstaat in Mitteleuropa. Er hat 16 Bundesländer und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst. Die 1949 gegründete Bundesrepublik Deutschland stellt die jüngste Ausprägung des 1871 erstmals begründeten deutschen Nationalstaates dar. Bundeshauptstadt und Regierungssitz ist Berlin. Deutschland grenzt an neun Staaten, es hat Anteil an der Nord- und Ostsee im Norden sowie dem Bodensee und den Alpen im Süden. Es liegt in der gemäßigten Klimazone und verfügt über 16 National- und mehr als 100 Naturparks."
+    tokens = nlp.tokenize_as_words(
+        text,
+        merge_named_entities=merge_named_entities,
+        merge_noun_chunks=merge_noun_chunks,
+    )
+
+    if merge_noun_chunks:
+        assert "ein Bundesstaat" in tokens
+        assert "16 Bundesländer" in tokens
+        assert "Die 1949 gegründete Bundesrepublik Deutschland" in tokens
+
+    else:
+        assert "ein Bundestaat in Mitteleuropa" not in tokens
+        assert "16 Bundesländer" not in tokens
+        assert "Die 1949 gegründete Bundesrepublik Deutschland" not in tokens
+
+    if merge_named_entities and not merge_noun_chunks:
+        assert "Bundesrepublik Deutschland" in tokens
+
+    else:
+        assert "Bundesrepublik Deutschland" not in tokens
+
+
 @given(nlp_st.texts)
 def test_noun_chunks(text: str):
     # the tested function only works for documents tokenized by spacy directly
@@ -103,6 +128,8 @@ def test_noun_chunks(text: str):
 
     # property functions must have the same length as the original document
     assert len(chunks) == len(doc)
+
+    # test the tokenization using noun chunks
 
 
 def test_noun_chunks_without_nouns():

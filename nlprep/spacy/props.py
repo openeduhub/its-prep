@@ -17,14 +17,26 @@ from nlprep.types import Tokens
 import spacy.tokens
 
 
-def tokenize_as_words(raw_doc: str) -> Tokens:
+def tokenize_as_words(
+    raw_doc: str, merge_noun_chunks=False, merge_named_entities=False
+) -> Tokens:
     """Tokenize a document into its words"""
-    return utils.raw_into_property(raw_doc, "text")
+    return utils.get_tokenizer_with(
+        "text",
+        merge_noun_chunks=merge_noun_chunks,
+        merge_named_entities=merge_named_entities,
+    )(raw_doc)
 
 
-def tokenize_as_lemmas(raw_doc: str) -> Tokens:
+def tokenize_as_lemmas(
+    raw_doc: str, merge_noun_chunks=False, merge_named_entities=False
+) -> Tokens:
     """Tokenize a document into its lemmas"""
-    return utils.raw_into_property(raw_doc, "lemma_")
+    return utils.get_tokenizer_with(
+        "lemma_",
+        merge_noun_chunks=merge_noun_chunks,
+        merge_named_entities=merge_named_entities,
+    )(raw_doc)
 
 
 @utils.property_from_doc

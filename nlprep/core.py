@@ -2,6 +2,7 @@
 Core functionality, like applying filters or tokenizing documents.
 """
 from collections.abc import Callable, Iterable, Iterator
+from functools import partial
 
 from nlprep.types import Document, Filter, Pipeline, Pipeline_Generator, Tokens
 
@@ -34,9 +35,13 @@ def apply_filters(docs: Iterable[Document], filters: Pipeline) -> Iterator[Docum
 
 
 def tokenize_documents(
-    raw_docs: Iterable[str],
-    tokenize_fun: Callable[[str], Tokens],
+    raw_docs: Iterable[str], tokenize_fun: Callable[[str], Tokens], **kwargs
 ) -> Iterator[Document]:
-    """Create Document objects from raw text, using the given tokenizer."""
+    """
+    Create Document objects from raw text, using the given tokenizer.
+
+    Any additional keyword arguments are passed onto the tokenization function.
+    """
+    tokenize_fun = partial(tokenize_fun, **kwargs)
     for raw_doc in raw_docs:
         yield Document.fromtext(raw_doc, tokenize_fun=tokenize_fun)

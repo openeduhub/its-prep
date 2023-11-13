@@ -1,5 +1,7 @@
-from collections.abc import Callable, Sequence
-from functools import lru_cache
+from collections.abc import Callable, Iterator, Sequence
+from contextlib import contextmanager
+from enum import Enum
+from functools import lru_cache, reduce
 from pathlib import Path
 
 import de_core_news_lg
@@ -7,10 +9,24 @@ from nlprep.types import Document, Property, Property_Function, Split_Function, 
 from nlprep.utils import Spacy_defaultdict
 
 import spacy.tokens
+from spacy.language import PipeCallable
 
 # spacy NLP pipelines / models
 nlp = de_core_news_lg.load()
-sent_nlp = nlp.add_pipe("sentencizer")
+nlp_sentensizer = nlp.add_pipe("sentencizer")
+
+
+# optional pipelines
+class opt_pipes(Enum):
+    MERGE_NOUN_CHUNKS = "merge_noun_chunks"
+    MERGE_NAMED_ENTITIES = "merge_entities"
+
+
+opt_pipe_funs: dict[opt_pipes, PipeCallable] = dict()
+for pipe in opt_pipes:
+    opt_pipe_funs[pipe] = nlp.add_pipe(pipe.value)
+    nlp.disable_pipe(pipe.value)
+
 
 text_to_doc_cache: Spacy_defaultdict[str] = Spacy_defaultdict(nlp)
 tokens_to_doc_cache: Spacy_defaultdict[Tokens] = Spacy_defaultdict(
@@ -89,11 +105,25 @@ def spacy_doc_from_tokens(tokens: Tokens) -> spacy.tokens.Doc:
     return tokens_to_doc_cache[tokens]
 
 
-def raw_into_property(raw_doc: str, prop: str) -> Tokens:
-    """Helper function to turn a raw document into tokens, based on property"""
-    processed_doc = spacy_doc_from_text(raw_doc)
+def get_tokenizer_with(
+    prop: str,
+    merge_named_entities=False,
+    merge_noun_chunks=False,
+) -> Callable[[str], Tokens]:
+    """Modify the given tokenization strategy such that it merges certain entities"""
+    sel_pipes = ([opt_pipes.MERGE_NAMED_ENTITIES] if merge_named_entities else []) + (
+        [opt_pipes.MERGE_NOUN_CHUNKS] if merge_noun_chunks else []
+    )
 
-    return Tokens(getattr(token, prop) for token in processed_doc)
+    def fun(text: str) -> Tokens:
+        # we need to copy the document,
+        # as applying a pipeline function to a document modifies it in place
+        doc = spacy_doc_from_text(text).copy()
+        pipes = [opt_pipe_funs[pipe] for pipe in sel_pipes]
+        doc = reduce(lambda x, fun: fun(x), pipes, doc)
+        return Tokens(getattr(token, prop) for token in doc)
+
+    return fun
 
 
 def document_into_spacy_doc(doc: Document) -> spacy.tokens.Doc:
@@ -132,7 +162,7 @@ def property_from_doc(
 @lru_cache(maxsize=2**16)
 def _analyze_sents(processed_doc: spacy.tokens.Doc) -> spacy.tokens.Doc:
     """Helper function to sentencize an already processed document"""
-    return sent_nlp(processed_doc)
+    return nlp_sentensizer(processed_doc)
 
 
 def sentencizer_from_doc(
