@@ -52,8 +52,8 @@ def test_text_cache(text: str):
 def test_tokens_cache(tokens: Tokens):
     doc = nlp.utils.spacy_doc_from_tokens(tokens)
 
-    assert tokens in nlp.utils.tokens_to_doc_cache
-    for token_doc, token_cache in zip(doc, nlp.utils.tokens_to_doc_cache[tokens]):
+    assert tokens in nlp.utils._tokens_cache
+    for token_doc, token_cache in zip(doc, nlp.utils._tokens_cache[tokens]):
         assert str(token_doc) == str(token_cache)
 
 
@@ -67,14 +67,14 @@ def test_text_cache_storage(text: str):
     # store the cache
     nlp.utils.save_caches(path, file_prefix="pytest")
     # delete the text from the cache
-    del nlp.utils.original_text_to_doc[text]
+    del nlp.utils._text_cache_original[text]
     # load the cache
     nlp.utils.load_caches(path, file_prefix="pytest")
     # delete the cache files
     [file.unlink() for file in path.glob("pytest*")]
 
-    assert text in nlp.utils.original_text_to_doc
-    for token_doc, token_cache in zip(doc, nlp.utils.original_text_to_doc[text]):
+    assert text in nlp.utils._text_cache_original
+    for token_doc, token_cache in zip(doc, nlp.utils._text_cache_original[text]):
         assert str(token_doc) == str(token_cache)
 
 
@@ -85,12 +85,12 @@ def test_tokens_cache_storage(tokens: Tokens):
     # store the cache
     nlp.utils.save_caches(Path("/tmp"), file_prefix="pytest")
     # delete the tokens from the cache
-    del nlp.utils.tokens_to_doc_cache[tokens]
+    del nlp.utils._tokens_cache[tokens]
     # load the cache
     nlp.utils.load_caches(Path("/tmp"), file_prefix="pytest")
 
-    assert tokens in nlp.utils.tokens_to_doc_cache
-    for token_doc, token_cache in zip(doc, nlp.utils.tokens_to_doc_cache[tokens]):
+    assert tokens in nlp.utils._tokens_cache
+    for token_doc, token_cache in zip(doc, nlp.utils._tokens_cache[tokens]):
         assert str(token_doc) == str(token_cache)
 
 
@@ -98,30 +98,25 @@ def test_tokens_cache_storage(tokens: Tokens):
 @given(st.booleans(), st.booleans())
 def test_tokenize_merges(merge_named_entities: bool, merge_noun_chunks: bool):
     text = "Deutschland ist ein Bundesstaat in Mitteleuropa. Er hat 16 Bundesländer und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst. Die 1949 gegründete Bundesrepublik Deutschland stellt die jüngste Ausprägung des 1871 erstmals begründeten deutschen Nationalstaates dar. Bundeshauptstadt und Regierungssitz ist Berlin. Deutschland grenzt an neun Staaten, es hat Anteil an der Nord- und Ostsee im Norden sowie dem Bodensee und den Alpen im Süden. Es liegt in der gemäßigten Klimazone und verfügt über 16 National- und mehr als 100 Naturparks."
-    tokens = nlp.tokenize_as_words(
-        text,
+    doc = tokenize_documents(
+        [text],
+        nlp.tokenize_as_words,
         merge_named_entities=merge_named_entities,
         merge_noun_chunks=merge_noun_chunks,
+    ).__next__()
+
+    assert ("ein Bundesstaat" in doc) == merge_noun_chunks
+    assert ("16 Bundesländer" in doc) == merge_noun_chunks
+    assert (
+        "Die 1949 gegründete Bundesrepublik Deutschland" in doc
+    ) == merge_noun_chunks
+    print(doc)
+    assert ("Bundesrepublik Deutschland" in doc) == (
+        merge_named_entities and not merge_noun_chunks
     )
 
-    if merge_noun_chunks:
-        assert "ein Bundesstaat" in tokens
-        assert "16 Bundesländer" in tokens
-        assert "Die 1949 gegründete Bundesrepublik Deutschland" in tokens
-
-    else:
-        assert "ein Bundestaat in Mitteleuropa" not in tokens
-        assert "16 Bundesländer" not in tokens
-        assert "Die 1949 gegründete Bundesrepublik Deutschland" not in tokens
-
-    if merge_named_entities and not merge_noun_chunks:
-        assert "Bundesrepublik Deutschland" in tokens
-
-    else:
-        assert "Bundesrepublik Deutschland" not in tokens
-
     if not merge_noun_chunks and not merge_named_entities:
-        assert len(tokens) == 85
+        assert len(doc) == 85
 
 
 @given(nlp_st.texts)
@@ -172,12 +167,14 @@ def test_posterior_merging():
     text = "Ein hungriger Hund geht in einem schönen See baden"
     doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
 
+    assert len(doc) == len(text.split(" "))
     assert all(token == word for token, word in zip(text.split(" "), doc))
 
     test_noun_chunks_with_nouns()
 
     doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
 
+    assert len(doc) == len(text.split(" "))
     assert all(token == word for token, word in zip(text.split(" "), doc))
 
 
