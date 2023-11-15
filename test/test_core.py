@@ -2,8 +2,8 @@ import test.strategies as lanst
 
 from hypothesis import given
 from hypothesis import strategies as st
-from nlprep.core import apply_filters
-from nlprep.types import Document, Filter
+from nlprep.core import apply_filters, selected_properties
+from nlprep.types import Document, Filter, Property_Function
 
 
 @given(st.lists(lanst.documents), st.lists(lanst.filters()))
@@ -52,3 +52,9 @@ def test_apply_filters_unsafe(docs: list[Document], filter_funs: list[Filter]):
 
             for discarded_index in discarded_indices:
                 assert discarded_index not in result.selected
+
+
+@given(st.lists(lanst.documents_with_selections()), lanst.property_funs())
+def test_selected_properties(docs: list[Document], property_fun: Property_Function):
+    for props, doc in zip(selected_properties(docs, property_fun), docs):
+        assert len(props) == len(doc.selected)

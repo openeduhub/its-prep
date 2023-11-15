@@ -43,6 +43,13 @@ def subsets(draw, given_set: Set[int]) -> Set[int]:
 
 
 @st.composite
+def documents_with_selections(draw) -> Document:
+    doc: Document = draw(documents)
+    subset: Set[int] = draw(subsets(doc.selected))
+    return doc.sub_doc(subset)
+
+
+@st.composite
 def filters(draw) -> Filter:
     # emulate immutable function behavior
     cache: dict[str, frozenset[int]] = dict()

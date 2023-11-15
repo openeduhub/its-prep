@@ -1,10 +1,10 @@
 """
 Core functionality, like applying filters or tokenizing documents.
 """
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partial
 
-from nlprep.types import Document, Filter, Pipeline, Pipeline_Generator, Tokens
+from nlprep.types import Document, Filter, Pipeline, Property, Property_Function, Tokens
 
 
 def apply_filters(docs: Iterable[Document], filters: Pipeline) -> Iterator[Document]:
@@ -45,3 +45,16 @@ def tokenize_documents(
     tokenize_fun = partial(tokenize_fun, **kwargs)
     for raw_doc in raw_docs:
         yield Document.fromtext(raw_doc, tokenize_fun=tokenize_fun)
+
+
+def selected_properties(
+    docs: Iterable[Document], property_fun: Property_Function[Property]
+) -> Iterator[tuple[Property, ...]]:
+    """
+    From the given documents, get the properties for *selected* tokens only.
+    """
+    for doc in docs:
+        props = property_fun(doc)
+        yield tuple(
+            prop for token, prop in zip(doc, props) if token in doc.selected_tokens
+        )
