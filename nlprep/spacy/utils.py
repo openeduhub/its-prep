@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from enum import Enum
 from functools import lru_cache, reduce
 from pathlib import Path
+from typing import Optional
 
 import de_core_news_lg
 from nlprep.types import Document, Property, Property_Function, Split_Function, Tokens
@@ -28,7 +29,8 @@ for pipe in opt_pipes:
     nlp.disable_pipe(pipe.value)
 
 
-text_to_doc_cache: Spacy_defaultdict[str] = Spacy_defaultdict(nlp)
+original_text_to_doc: Spacy_defaultdict[str] = Spacy_defaultdict(nlp)
+original_text_to_doc_current: Spacy_defaultdict[str] = Spacy_defaultdict(nlp)
 tokens_to_doc_cache: Spacy_defaultdict[Tokens] = Spacy_defaultdict(
     lambda x: spacy.tokens.Doc(vocab=nlp.vocab, words=list(x))
 )
@@ -42,7 +44,7 @@ def save_caches(directory: Path, file_prefix: str = "") -> None:
     unnecessary re-evaluation of already analyzed texts.
     """
     file_prefix = file_prefix + "_" if file_prefix else ""
-    text_to_doc_cache.save(
+    original_text_to_doc.save(
         directory / f"{file_prefix}text_to_doc_cache_keys",
         directory / f"{file_prefix}text_to_doc_cache_docs",
     )
@@ -57,8 +59,8 @@ def _load_text_cache(directory: Path, file_prefix: str = "") -> None:
     keys_path = directory / f"{file_prefix}text_to_doc_cache_keys"
     docs_path = directory / f"{file_prefix}text_to_doc_cache_docs"
 
-    global text_to_doc_cache
-    text_to_doc_cache = Spacy_defaultdict.from_file(
+    global original_text_to_doc
+    original_text_to_doc = Spacy_defaultdict.from_file(
         default_factory=nlp,
         keys_path=keys_path,
         docs_path=docs_path,
@@ -93,8 +95,22 @@ def load_caches(directory: Path, file_prefix: str = "") -> None:
     _load_tokens_cache(directory, file_prefix)
 
 
-def spacy_doc_from_text(text: str) -> spacy.tokens.Doc:
-    return text_to_doc_cache[text]
+def original_spacy_doc_from_text(text: str) -> spacy.tokens.Doc:
+    return original_text_to_doc[text]
+
+
+def current_spacy_doc_from_text(text: str) -> spacy.tokens.Doc:
+    """
+    Return the currently used version of the spacy document, if it exists.
+    Otherwise, default to the original (unmerged) document.
+
+    The primary way in which a spacy document may change is through merging
+    of tokens (e.g. named entities).
+    """
+    if text in original_text_to_doc_current:
+        return original_text_to_doc_current[text]
+
+    return original_spacy_doc_from_text(text)
 
 
 def spacy_doc_from_tokens(tokens: Tokens) -> spacy.tokens.Doc:
@@ -118,9 +134,10 @@ def get_tokenizer_with(
     def fun(text: str) -> Tokens:
         # we need to copy the document,
         # as applying a pipeline function to a document modifies it in place
-        doc = spacy_doc_from_text(text).copy()
+        doc = current_spacy_doc_from_text(text).copy()
         pipes = [opt_pipe_funs[pipe] for pipe in sel_pipes]
         doc = reduce(lambda x, fun: fun(x), pipes, doc)
+        original_text_to_doc_current[text] = doc
         return Tokens(getattr(token, prop) for token in doc)
 
     return fun
@@ -130,11 +147,13 @@ def document_into_spacy_doc(doc: Document) -> spacy.tokens.Doc:
     """Transform a document into its analyzed spaCy counterpart."""
 
     # if the document was tokenized by spaCy, it was stored during this step
-    if doc.original_text in text_to_doc_cache:
-        return spacy_doc_from_text(doc.original_text)
+    ret = original_text_to_doc_current.get(doc.original_text, None)
 
-    # otherwise, return an analyzed version that was not tokenized again
-    return spacy_doc_from_tokens(doc.original_tokens)
+    if ret is None:
+        # otherwise, return an analyzed version that was not tokenized again
+        return spacy_doc_from_tokens(doc.original_tokens)
+
+    return ret
 
 
 def property_from_doc(

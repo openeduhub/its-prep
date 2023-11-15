@@ -1,12 +1,12 @@
-from collections.abc import Callable, Collection
-from nlprep.core import tokenize_documents
-from nlprep.types import Document, Property_Function, Split_Function, Tokens
 import test.strategies as nlp_st
+from collections.abc import Callable
 from pathlib import Path
 
 import nlprep.spacy.props as nlp
 from hypothesis import given, settings
 from hypothesis import strategies as st
+from nlprep.core import tokenize_documents
+from nlprep.types import Document, Property_Function, Split_Function, Tokens
 
 
 @given(
@@ -42,8 +42,9 @@ def test_splitters_have_correct_len(doc: Document, splitter: Split_Function):
 def test_text_cache(text: str):
     doc = nlp.tokenize_as_words(text)
 
-    assert text in nlp.utils.text_to_doc_cache
-    for token_doc, token_cache in zip(doc, nlp.utils.text_to_doc_cache[text]):
+    for token_doc, token_cache in zip(
+        doc, nlp.utils.original_spacy_doc_from_text(text)
+    ):
         assert str(token_doc) == str(token_cache)
 
 
@@ -66,14 +67,14 @@ def test_text_cache_storage(text: str):
     # store the cache
     nlp.utils.save_caches(path, file_prefix="pytest")
     # delete the text from the cache
-    del nlp.utils.text_to_doc_cache[text]
+    del nlp.utils.original_text_to_doc[text]
     # load the cache
     nlp.utils.load_caches(path, file_prefix="pytest")
     # delete the cache files
     [file.unlink() for file in path.glob("pytest*")]
 
-    assert text in nlp.utils.text_to_doc_cache
-    for token_doc, token_cache in zip(doc, nlp.utils.text_to_doc_cache[text]):
+    assert text in nlp.utils.original_text_to_doc
+    for token_doc, token_cache in zip(doc, nlp.utils.original_text_to_doc[text]):
         assert str(token_doc) == str(token_cache)
 
 
@@ -119,6 +120,9 @@ def test_tokenize_merges(merge_named_entities: bool, merge_noun_chunks: bool):
     else:
         assert "Bundesrepublik Deutschland" not in tokens
 
+    if not merge_noun_chunks and not merge_named_entities:
+        assert len(tokens) == 85
+
 
 @given(nlp_st.texts)
 def test_noun_chunks(text: str):
@@ -141,7 +145,7 @@ def test_noun_chunks_without_nouns():
 
 
 def test_noun_chunks_with_nouns():
-    text = "Ein hungriger Hund geht in einem schönen See baden."
+    text = "Ein hungriger Hund geht in einem schönen See baden"
     doc = list(tokenize_documents([text], nlp.tokenize_as_words))[0]
     chunks = nlp.noun_chunks(doc)
 
@@ -161,3 +165,35 @@ def test_noun_chunks_with_nouns():
     assert all(
         chunk_a == chunk_b for chunk_a, chunk_b in zip(see_chunks, see_chunks[1:])
     )
+
+
+# due to caching, this kind of operation used to fail in a previous version
+def test_posterior_merging():
+    text = "Ein hungriger Hund geht in einem schönen See baden"
+    doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
+
+    assert all(token == word for token, word in zip(text.split(" "), doc))
+
+    test_noun_chunks_with_nouns()
+
+    doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
+
+    assert all(token == word for token, word in zip(text.split(" "), doc))
+
+
+@given(nlp_st.texts)
+def test_get_word_vectors(text: str):
+    doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
+    vectors = nlp.get_word_vectors(doc)
+
+    assert len(vectors) == len(doc)
+
+
+def test_get_word_vectors_with_merging():
+    text = "Ein hungriger Hund geht in einem schönen See baden."
+    doc = tokenize_documents(
+        [text], nlp.tokenize_as_words, merge_noun_chunks=True
+    ).__next__()
+    vectors = nlp.get_word_vectors(doc)
+
+    assert len(vectors) == len(doc)
