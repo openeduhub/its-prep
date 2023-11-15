@@ -12,7 +12,9 @@ spaCy-specific document representations,
 they will actually act on the internal Document representation.
 """
 import nlprep.spacy.utils as utils
+import numpy as np
 from nlprep.types import Tokens
+from thinc.types import Floats1d
 
 import spacy.tokens
 
@@ -37,6 +39,11 @@ def tokenize_as_lemmas(
         merge_noun_chunks=merge_noun_chunks,
         merge_named_entities=merge_named_entities,
     )(raw_doc)
+
+
+@utils.property_from_doc
+def get_word_vectors(processed_doc: spacy.tokens.Doc) -> list[Floats1d]:
+    return [token.vector for token in processed_doc]
 
 
 @utils.property_from_doc
