@@ -2,7 +2,7 @@
   description = "Dependency and Build Process for the Text Pre-Processing Pipeline";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
   };
@@ -56,10 +56,12 @@
             ipython
             # type checking
             mypy
-            # writing tests
+            # unit tests
             pytest
             pytest-cov
             hypothesis
+            # debugger
+            debugpy
           ]
           ++ (python-packages-build py-pkgs)
           ++ (python-packages-docs py-pkgs);
