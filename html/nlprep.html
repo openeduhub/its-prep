@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Core module &mdash; nlprep 0.1.2 documentation</title>
@@ -11,12 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=92734c54"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -48,6 +47,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Core module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-nlprep.core">Core functionality</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nlprep.core.apply_filters"><code class="docutils literal notranslate"><span class="pre">apply_filters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nlprep.core.selected_properties"><code class="docutils literal notranslate"><span class="pre">selected_properties()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nlprep.core.tokenize_documents"><code class="docutils literal notranslate"><span class="pre">tokenize_documents()</span></code></a></li>
 </ul>
 </li>
@@ -99,13 +99,13 @@
            <div itemprop="articleBody">
              
   <section id="core-module">
-<h1>Core module<a class="headerlink" href="#core-module" title="Permalink to this heading"></a></h1>
+<h1>Core module<a class="headerlink" href="#core-module" title="Link to this heading"></a></h1>
 <section id="module-nlprep.core">
-<span id="core-functionality"></span><h2>Core functionality<a class="headerlink" href="#module-nlprep.core" title="Permalink to this heading"></a></h2>
+<span id="core-functionality"></span><h2>Core functionality<a class="headerlink" href="#module-nlprep.core" title="Link to this heading"></a></h2>
 <p>Core functionality, like applying filters or tokenizing documents.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nlprep.core.apply_filters">
-<span class="sig-prename descclassname"><span class="pre">nlprep.core.</span></span><span class="sig-name descname"><span class="pre">apply_filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.core.apply_filters" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlprep.core.</span></span><span class="sig-name descname"><span class="pre">apply_filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.core.apply_filters" title="Link to this definition"></a></dt>
 <dd><p>Iteratively apply the pipeline’s Filter functions on the given documents,
 interpreting the collections of indices returned by the filters as
 tokens to possibly keep.
@@ -115,7 +115,7 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
-<li><p><strong>filters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<a class="reference internal" href="#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>]) – </p></li>
+<li><p><strong>filters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<a class="reference internal" href="#nlprep.types.Filter" title="nlprep.types.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code></a>]) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -125,9 +125,27 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nlprep.core.selected_properties">
+<span class="sig-prename descclassname"><span class="pre">nlprep.core.</span></span><span class="sig-name descname"><span class="pre">selected_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.core.selected_properties" title="Link to this definition"></a></dt>
+<dd><p>From the given documents, get the properties for <em>selected</em> tokens only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – </p></li>
+<li><p><strong>property_fun</strong> (<a class="reference internal" href="#nlprep.types.Property_Function" title="nlprep.types.Property_Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">Property_Function</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>, covariant=True)]) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>, covariant=True), <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nlprep.core.tokenize_documents">
-<span class="sig-prename descclassname"><span class="pre">nlprep.core.</span></span><span class="sig-name descname"><span class="pre">tokenize_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenize_fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.core.tokenize_documents" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlprep.core.</span></span><span class="sig-name descname"><span class="pre">tokenize_documents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenize_fun</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.core.tokenize_documents" title="Link to this definition"></a></dt>
 <dd><p>Create Document objects from raw text, using the given tokenizer.</p>
+<p>Any additional keyword arguments are passed onto the tokenization function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -143,10 +161,10 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 
 </section>
 <section id="module-nlprep.types">
-<span id="data-types"></span><h2>Data types<a class="headerlink" href="#module-nlprep.types" title="Permalink to this heading"></a></h2>
+<span id="data-types"></span><h2>Data types<a class="headerlink" href="#module-nlprep.types" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlprep.types.Document">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -159,7 +177,7 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlprep.types.Document.fromtext">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromtext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenize_fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.fromtext" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromtext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenize_fun</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.fromtext" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -175,7 +193,7 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nlprep.types.Document.fromtokens">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromtokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_Document__iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.fromtokens" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromtokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_Document__iterable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.fromtokens" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>_Document__iterable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – </p>
@@ -188,27 +206,27 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nlprep.types.Document.original_text">
-<span class="sig-name descname"><span class="pre">original_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#nlprep.types.Document.original_text" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">original_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#nlprep.types.Document.original_text" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nlprep.types.Document.original_tokens">
-<span class="sig-name descname"><span class="pre">original_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">]</span></em><a class="headerlink" href="#nlprep.types.Document.original_tokens" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">original_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">]</span></em><a class="headerlink" href="#nlprep.types.Document.original_tokens" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nlprep.types.Document.selected">
-<span class="sig-name descname"><span class="pre">selected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><a class="headerlink" href="#nlprep.types.Document.selected" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">selected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><a class="headerlink" href="#nlprep.types.Document.selected" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nlprep.types.Document.selected_tokens">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nlprep.types.Document.selected_tokens" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">selected_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#nlprep.types.Document.selected_tokens" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nlprep.types.Document.sub_doc">
-<span class="sig-name descname"><span class="pre">sub_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.sub_doc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sub_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_indices</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Document.sub_doc" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>selected_indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – </p>
@@ -223,7 +241,7 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlprep.types.Filter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Filter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Filter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Functions that filter tokenized documents contents in some way.</p>
 <p>Filter functions are composed to created pipelines.</p>
@@ -231,7 +249,7 @@ Tokens with index not inside a filter’s result will be discarded.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlprep.types.Pipeline_Generator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Pipeline_Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Pipeline_Generator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Pipeline_Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Pipeline_Generator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Functions that generate pre-processing pipeline, given a document corpus.</p>
 <p>The reason why we supply the document corpus here is because some filters
@@ -241,14 +259,14 @@ e.g. in order to filter by the document frequency of lemmatized tokens.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlprep.types.Property_Function">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Property_Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Property_Function" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Property_Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Property_Function" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Property</span></code>]</p>
 <p>Functions that compute some property for the tokens of the document.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlprep.types.Split_Function">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Split_Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Split_Function" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlprep.types.</span></span><span class="sig-name descname"><span class="pre">Split_Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.types.Split_Function" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Property</span></code>]</p>
 <p>Functions that compute some property for the tokens of the document,
 splitting them into nested collections.</p>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>spaCy utilities &mdash; nlprep 0.1.2 documentation</title>
@@ -11,12 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=92734c54"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -48,11 +47,6 @@
 <li class="toctree-l1"><a class="reference internal" href="nlprep.html">Core module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">spaCy utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-nlprep.spacy.props">Computation of properties</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.get_upos"><code class="docutils literal notranslate"><span class="pre">get_upos()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.into_sentences"><code class="docutils literal notranslate"><span class="pre">into_sentences()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.into_sentences_lemmatized"><code class="docutils literal notranslate"><span class="pre">into_sentences_lemmatized()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.is_stop"><code class="docutils literal notranslate"><span class="pre">is_stop()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.lemmatize"><code class="docutils literal notranslate"><span class="pre">lemmatize()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.tokenize_as_lemmas"><code class="docutils literal notranslate"><span class="pre">tokenize_as_lemmas()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nlprep.spacy.props.tokenize_as_words"><code class="docutils literal notranslate"><span class="pre">tokenize_as_words()</span></code></a></li>
 </ul>
@@ -87,9 +81,9 @@
            <div itemprop="articleBody">
              
   <section id="spacy-utilities">
-<h1>spaCy utilities<a class="headerlink" href="#spacy-utilities" title="Permalink to this heading"></a></h1>
+<h1>spaCy utilities<a class="headerlink" href="#spacy-utilities" title="Link to this heading"></a></h1>
 <section id="module-nlprep.spacy.props">
-<span id="computation-of-properties"></span><h2>Computation of properties<a class="headerlink" href="#module-nlprep.spacy.props" title="Permalink to this heading"></a></h2>
+<span id="computation-of-properties"></span><h2>Computation of properties<a class="headerlink" href="#module-nlprep.spacy.props" title="Link to this heading"></a></h2>
 <p>A collection of functions that compute various text properties,
 based on the spaCy library and its de_dep_news_trf model in particular.</p>
 <p>See <a class="reference external" href="https://huggingface.co/spacy/de_dep_news_trf">https://huggingface.co/spacy/de_dep_news_trf</a> for more details on the model.</p>
@@ -99,73 +93,8 @@ cache spaCy representations of already processed documents.</p>
 spaCy-specific document representations,
 they will actually act on the internal Document representation.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="nlprep.spacy.props.get_upos">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">get_upos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.get_upos" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>)]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nlprep.spacy.props.into_sentences">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">into_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.into_sentences" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>)]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nlprep.spacy.props.into_sentences_lemmatized">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">into_sentences_lemmatized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.into_sentences_lemmatized" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>)]]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nlprep.spacy.props.is_stop">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">is_stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.is_stop" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>)]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nlprep.spacy.props.lemmatize">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">lemmatize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.lemmatize" title="Permalink to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="nlprep.html#nlprep.types.Document" title="nlprep.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">Property</span></code>)]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="nlprep.spacy.props.tokenize_as_lemmas">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">tokenize_as_lemmas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.tokenize_as_lemmas" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">tokenize_as_lemmas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_noun_chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_named_entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.tokenize_as_lemmas" title="Link to this definition"></a></dt>
 <dd><p>Tokenize a document into its lemmas</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -179,7 +108,7 @@ they will actually act on the internal Document representation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nlprep.spacy.props.tokenize_as_words">
-<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">tokenize_as_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_doc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.tokenize_as_words" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlprep.spacy.props.</span></span><span class="sig-name descname"><span class="pre">tokenize_as_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_noun_chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merge_named_entities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlprep.spacy.props.tokenize_as_words" title="Link to this definition"></a></dt>
 <dd><p>Tokenize a document into its words</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
