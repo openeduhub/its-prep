@@ -66,7 +66,7 @@
       ### declare how the python package shall be built
       nlprep-lib = py-pkgs: py-pkgs.buildPythonPackage rec {
         pname = "nlprep";
-        version = "0.1.3";
+        version = "0.1.4";
         # only include the package-related files
         src = nix-filter {
           root = self;
