@@ -28,6 +28,12 @@ fillers = {
     "Lerneffekt",
     "zahlreich",
     "thematisieren",
+    "der",
+    "die",
+    "das",
+    "wir",
+    "ihr",
+    "sie",
 }
 
 lrts = {
