@@ -76,8 +76,6 @@ class Filter(Protocol):
 
 Pipeline = Sequence[Filter]
 
-Pipeline_Factory = Callable[[Collection[Document]], Pipeline]
-
 Property = TypeVar("Property", covariant=True)
 
 

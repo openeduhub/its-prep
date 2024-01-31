@@ -13,7 +13,7 @@ import nlprep.spacy.props as nlp
 import nlprep.specs.collections as cols
 import nlprep.specs.filters as filters
 from nlprep.core import apply_filters
-from nlprep.types import Document, Pipeline, Pipeline_Factory, Property_Function
+from nlprep.types import Document, Pipeline, Pipeline_Generator, Property_Function
 
 Upos = TypeVar("Upos")
 Lemma = TypeVar("Lemma")
@@ -26,13 +26,13 @@ def get_generic_topic_modeling_pipelines(
     ignored_upos_tags: Collection[Upos],
     ignored_lemmas: Collection[Lemma],
     required_df_interval: dict[str, Any],
-) -> Iterator[Pipeline_Factory]:
+) -> Iterator[Pipeline_Generator]:
     """
     Get the corpus-specific pipelines for topic modeling tasks.
     See apply_generic_topic_modeling for more details.
     """
     # filter by everything but document frequency
-    yield lambda docs: [
+    yield lambda docs, **kwargs: [
         # filter by upos tags
         filters.negated(
             filters.get_filter_by_property(get_upos_fun, ignored_upos_tags)
@@ -43,7 +43,7 @@ def get_generic_topic_modeling_pipelines(
         filters.negated(filters.get_filter_by_property(lemmatize_fun, ignored_lemmas)),
     ]
 
-    yield lambda docs: [
+    yield lambda docs, **kwargs: [
         filters.get_filter_by_frequency(
             docs,
             lemmatize_fun,
@@ -105,7 +105,7 @@ def get_poc_topic_modeling_pipelines(
         cols.sources,
         cols.target_audiences,
     ),
-) -> Iterator[Pipeline_Factory]:
+) -> Iterator[Pipeline_Generator]:
     """The particular pipeline used for the PoC topic modeling application."""
     return get_generic_topic_modeling_pipelines(
         lemmatize_fun=nlp.lemmatize,
