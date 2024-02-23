@@ -11,30 +11,12 @@
     let
       nix-filter = self.inputs.nix-filter.lib;
 
-      # build the spaCy language processing pipeline as a python package
-      de_dep_news_trf = py-pkgs: py-pkgs.buildPythonPackage rec {
-        pname = "de_core_news_lg";
-        version =
-          if "3.8" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.7" then "3.7.0" else
-          if "3.6" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.5" then "3.5.0" else
-          builtins.throw "Unsupported spacy version";
-        src = builtins.fetchTarball {
-          url = "https://github.com/explosion/spacy-models/releases/download/${pname}-${version}/${pname}-${version}.tar.gz";
-          sha256 =
-            if "3.8" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.7" then "oksQXT/QbUno4y0l5t04FckWNULylLtX9spvgBsaNR0=" else
-            if "3.6" > py-pkgs.spacy.version && py-pkgs.spacy.version >= "3.5" then "oOrxOoe+SyleTsDO9WYB25Vvs4LX6B4aJPlGbMRsAk4=" else
-            builtins.throw "Unsupported spacy version";
-        };
-        doCheck = false;
-        propagatedBuildInputs = with py-pkgs; [ spacy ];
-      };
-
       ### declare the python packages used for building, docs & development
       python-packages-build = py-pkgs:
         with py-pkgs; [
-          (de_dep_news_trf py-pkgs)
           numpy
           spacy
+          spacy_models.de_core_news_lg
         ];
 
       python-packages-docs = py-pkgs:
