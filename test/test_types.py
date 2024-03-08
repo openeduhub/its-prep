@@ -24,6 +24,14 @@ def test_document_from_tokens(tokens: Tokens):
     assert doc.selected == set(range(len(tokens)))
 
 
+def test_document_languages():
+    tokens = "This is an English text".split(" ")
+    assert Document.fromtokens(tokens).language == "en"
+
+    tokens = "Dies ist ein deutscher Text".split(" ")
+    assert Document.fromtokens(tokens).language == "de"
+
+
 @given(documents, st.sets(st.integers(min_value=0)))
 def test_document_sub_doc(doc: Document, index_set: Set[int]):
     result = doc.sub_doc(index_set)

@@ -2,7 +2,7 @@
   description = "Dependency and Build Process for the Text Pre-Processing Pipeline";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
   };
@@ -15,8 +15,11 @@
       python-packages-build = py-pkgs:
         with py-pkgs; [
           numpy
+          # NLP
           spacy
           spacy_models.de_core_news_lg
+          # language detection, also used in trafilatura
+          py3langid
         ];
 
       python-packages-docs = py-pkgs:

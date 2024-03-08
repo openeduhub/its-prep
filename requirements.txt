@@ -1,3 +1,4 @@
 de_core_news_lg
 numpy
 spacy
+py3langid

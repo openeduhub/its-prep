@@ -4,6 +4,8 @@ from collections.abc import Callable, Collection, Iterable, Iterator, Sequence, 
 from dataclasses import dataclass
 from typing import Protocol, TypeVar
 
+import py3langid as langid
+
 Tokens = tuple[str, ...]
 
 
@@ -12,28 +14,48 @@ class Document:
     original_text: str
     original_tokens: Tokens
     selected: frozenset[int]
+    language: str
 
     @property
     def selected_tokens(self) -> Tokens:
         return tuple(self.original_tokens[index] for index in self.selected)
 
     @classmethod
+    def make(
+        cls,
+        original_text: str,
+        original_tokens: Tokens,
+        selected: Iterable[int],
+        language: str | None = None,
+    ) -> Document:
+        if language is None:
+            language, _ = langid.classify(original_text)
+            assert isinstance(language, str)
+
+        return Document(
+            original_text=original_text,
+            original_tokens=original_tokens,
+            selected=frozenset(selected),
+            language=language,
+        )
+
+    @classmethod
     def fromtext(cls, text: str, tokenize_fun: Callable[[str], Tokens]) -> Document:
         tokens = tokenize_fun(text)
-        return Document(
+        return Document.make(
             original_text=text,
             original_tokens=tokens,
-            selected=frozenset(range(len(tokens))),
+            selected=range(len(tokens)),
         )
 
     @classmethod
     def fromtokens(cls, __iterable: Iterable[str]) -> Document:
         tokens = Tokens(__iterable)
         text = " ".join(tokens)
-        return Document(
+        return Document.make(
             original_text=text,
             original_tokens=tokens,
-            selected=frozenset(range(len(tokens))),
+            selected=range(len(tokens)),
         )
 
     def sub_doc(self, selected_indices: Set[int]) -> Document:
@@ -41,6 +63,7 @@ class Document:
             original_text=self.original_text,
             original_tokens=self.original_tokens,
             selected=self.selected & selected_indices,
+            language=self.language,
         )
 
     # a document is a Collection over its selected tokens
