@@ -11,9 +11,9 @@ Note that even though these functions are defined on
 spaCy-specific document representations,
 they will actually act on the internal Document representation.
 """
-import nlprep.spacy.utils as utils
+import its_prep.spacy.utils as utils
 import numpy as np
-from nlprep.types import Tokens
+from its_prep.types import Tokens
 from thinc.types import Floats1d
 
 import spacy.tokens

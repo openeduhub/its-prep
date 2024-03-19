@@ -4,7 +4,7 @@ Pre-build specifications
 Collections
 -------------------------------
 
-.. automodule:: nlprep.specs.collections
+.. automodule:: its_prep.specs.collections
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ Collections
 Filters
 ---------------------------
 
-.. automodule:: nlprep.specs.filters
+.. automodule:: its_prep.specs.filters
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ Filters
 Pipelines
 -----------------------------
 
-.. automodule:: nlprep.specs.pipelines
+.. automodule:: its_prep.specs.pipelines
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,7 +4,14 @@ Core functionality, like applying filters or tokenizing documents.
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partial
 
-from nlprep.types import Document, Filter, Pipeline, Property, Property_Function, Tokens
+from its_prep.types import (
+    Document,
+    Filter,
+    Pipeline,
+    Property,
+    Property_Function,
+    Tokens,
+)
 
 
 def apply_filters(docs: Iterable[Document], filters: Pipeline) -> Iterator[Document]:

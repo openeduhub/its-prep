@@ -1,5 +1,5 @@
 from collections.abc import Callable, Collection, Iterable, Set
-from nlprep.types import Document, Tokens
+from its_prep.types import Document, Tokens
 from test.strategies import documents, texts, tokenizers, tokens
 from hypothesis import given, strategies as st
 

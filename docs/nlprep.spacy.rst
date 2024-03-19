@@ -4,7 +4,7 @@ spaCy utilities
 Computation of properties
 -------------------------
 
-.. automodule:: nlprep.spacy.props
+.. automodule:: its_prep.spacy.props
    :members:
    :undoc-members:
    :show-inheritance:

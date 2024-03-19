@@ -1,1 +1,1 @@
-from nlprep.spacy.props import *
+from its_prep.spacy.props import *

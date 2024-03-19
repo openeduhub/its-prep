@@ -2,11 +2,11 @@ import test.strategies as nlp_st
 from collections.abc import Callable
 from pathlib import Path
 
-import nlprep.spacy.props as nlp
+import its_prep.spacy.props as nlp
 from hypothesis import given, settings
 from hypothesis import strategies as st
-from nlprep.core import tokenize_documents
-from nlprep.types import Document, Property_Function, Split_Function, Tokens
+from its_prep.core import tokenize_documents
+from its_prep.types import Document, Property_Function, Split_Function, Tokens
 
 
 @given(
@@ -61,7 +61,7 @@ def test_tokens_cache(tokens: Tokens):
 def test_text_cache_storage(text: str):
     doc = nlp.tokenize_as_words(text)
 
-    path = Path("/tmp/nlprep-test")
+    path = Path("/tmp/its-prep-test")
     path.mkdir(parents=True, exist_ok=True)
 
     # store the cache

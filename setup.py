@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="nlprep",
+    name="its_prep",
     version="0.1.4",
     description="A collection of NLP tools for text-preprocessing tasks.",
     packages=find_packages(),

@@ -9,11 +9,11 @@ filter.apply_filters function.
 from collections.abc import Callable, Collection, Iterator
 from typing import Any, TypeVar
 
-import nlprep.spacy.props as nlp
-import nlprep.specs.collections as cols
-import nlprep.specs.filters as filters
-from nlprep.core import apply_filters
-from nlprep.types import Document, Pipeline, Pipeline_Generator, Property_Function
+import its_prep.spacy.props as nlp
+import its_prep.specs.collections as cols
+import its_prep.specs.filters as filters
+from its_prep.core import apply_filters
+from its_prep.types import Document, Pipeline, Pipeline_Generator, Property_Function
 
 Upos = TypeVar("Upos")
 Lemma = TypeVar("Lemma")

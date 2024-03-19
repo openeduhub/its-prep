@@ -13,7 +13,7 @@ from collections.abc import Collection
 from typing import Optional, Set, TypeVar
 
 import numpy as np
-from nlprep.types import Document, Filter, Property_Function, Split_Function
+from its_prep.types import Document, Filter, Property_Function, Split_Function
 
 
 def negated(fun: Filter) -> Filter:

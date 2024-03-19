@@ -49,14 +49,14 @@
         ++ (python-packages-docs py-pkgs);
 
       ### declare how the python package shall be built
-      nlprep-lib = py-pkgs: py-pkgs.buildPythonPackage rec {
-        pname = "nlprep";
+      its-prep-lib = py-pkgs: py-pkgs.buildPythonPackage rec {
+        pname = "its-prep";
         version = "0.1.4";
         # only include the package-related files
         src = nix-filter {
           root = self;
           include = [
-            "${pname}"
+            "its_prep"
             "test"
             ./setup.py
             ./requirements.txt
@@ -73,7 +73,7 @@
     in
     {
       lib = {
-        nlprep = nlprep-lib;
+        its-prep = its-prep-lib;
       };
       overlays.default = (final: prev: {
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
@@ -90,13 +90,13 @@
       in
       {
         packages = rec {
-          default = nlprep;
-          nlprep = nlprep-lib python.pkgs;
+          default = its-prep;
+          its-prep = its-prep-lib python.pkgs;
           docs = pkgs.runCommand "docs"
             {
               buildInputs = [
                 (python-packages-docs python.pkgs)
-                (nlprep.override { doCheck = false; })
+                (its-prep.override { doCheck = false; })
               ];
             }
             (pkgs.writeShellScript "docs.sh" ''

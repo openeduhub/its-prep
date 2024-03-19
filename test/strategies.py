@@ -1,7 +1,7 @@
 from collections.abc import Sequence, Set
 
 import hypothesis.strategies as st
-from nlprep.types import Document, Filter, Property_Function, Tokens
+from its_prep.types import Document, Filter, Property_Function, Tokens
 
 # fundamental types
 characters = st.characters(max_codepoint=2047)

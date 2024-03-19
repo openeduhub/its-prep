@@ -11,7 +11,7 @@ This library can be installed either as a =Nix Flake= input or as a Python libra
 
 To install this package through ~pip~, it should be sufficient to run
 #+begin_src sh
-pip install git+https://github.com/openeduhub/nlprep.git@main
+pip install git+https://github.com/openeduhub/its-prep.git@main
 #+end_src
 
 Note that you will have to manually ensure that [[https://huggingface.co/spacy/de_dep_news_trf][de_core_news_lg]] is installed, e.g. through
@@ -25,8 +25,8 @@ Include this Flake in the inputs of your Flake:
 #+begin_src nix
 {
   inputs = {
-    nlprep = {
-      url = "github:openeduhub/nlprep";
+    its-prep = {
+      url = "github:openeduhub/its-prep";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -38,9 +38,9 @@ Then, simply include its default package in your Python environment, e.g.
 {
   outputs = { self, nixpkgs, ... }:
     let
-      nlprep = self.inputs.nlprep.packages.default.${system};
+      its-prep = self.inputs.its-prep.packages.default.${system};
 
-      python-packages = py-pkgs: [ nlprep ];
+      python-packages = py-pkgs: [ its-prep ];
       local-python = pkgs.python3.withPackages python-packages;
     in
       {...};
@@ -49,27 +49,27 @@ Then, simply include its default package in your Python environment, e.g.
 
 * Design
 
-Core to this library is the abstraction of natural language pre-processing as an orchestration of multiple steps that each take a tokenized document and return a subset of its tokens, based on some internal logic. We call these steps filter functions (of type =nlprep.types.Filter=). A pre-processing pipeline is simply a collection of filters.
+Core to this library is the abstraction of natural language pre-processing as an orchestration of multiple steps that each take a tokenized document and return a subset of its tokens, based on some internal logic. We call these steps filter functions (of type =its_prep.types.Filter=). A pre-processing pipeline is simply a collection of filters.
 
-To ensure that during filtering, no necessary information is discarded (e.g. for filters that act on sentences), documents are represented through an internal, immutable format (=nlprep.types.Document=) that always contains both the current subset of tokens and the full contents of the original document.
+To ensure that during filtering, no necessary information is discarded (e.g. for filters that act on sentences), documents are represented through an internal, immutable format (=its_prep.types.Document=) that always contains both the current subset of tokens and the full contents of the original document.
 Thus, a filter is simply any function that takes a document of type =Document= and returns another =Document=.
 
 * Sub-Modules
 
-- =nlprep.core= contains core functionality, such as the application of a pre-processing pipeline onto a document corpus.
-- =nlprep.specs= contains pre-defined pipelines in =nlprep.specs.pipelines= and functionality to easily define custom filter functions in =nlprep.specs.filters=.
-- =nlprep.spacy.props= contains various concrete NLP processing tasks, such as lemmatization or determination of POS tags. These are mostly used to compute properties to base the filters defined with =nlprep.specs.filters= on.
+- =its_prep.core= contains core functionality, such as the application of a pre-processing pipeline onto a document corpus.
+- =its_prep.specs= contains pre-defined pipelines in =its_prep.specs.pipelines= and functionality to easily define custom filter functions in =its_prep.specs.filters=.
+- =its_prep.spacy.props= contains various concrete NLP processing tasks, such as lemmatization or determination of POS tags. These are mostly used to compute properties to base the filters defined with =its_prep.specs.filters= on.
   
 * Tutorial
 :PROPERTIES:
-:HEADER-ARGS: :results silent :session nlprep-demo :tangle demo.py :kernel python3
+:HEADER-ARGS: :results silent :session its-prep-demo :tangle demo.py :kernel python3
 :END:
 
 In this section, we will be demonstrating the functionality by applying both a pre-defined processing pipeline, as well as multiple custom ones.
 
 ** Utils :noexport:
 :PROPERTIES:
-:HEADER-ARGS: :session nlprep-demo
+:HEADER-ARGS: :session its-prep-demo
 :END:
 #+name: print-results
 #+begin_src python :var results=[] :results replace output
@@ -94,8 +94,8 @@ Note that as a corollary, this means that filters cannot modify or remove parts 
 
 Tokenize the documents using =spaCy=, displaying the tokens using their lemmatized form.
 #+begin_src python :post print-results(results=*this*) :results replace value :exports both
-import nlprep.spacy as nlp
-from nlprep import tokenize_documents
+import its_prep.spacy as nlp
+from its_prep import tokenize_documents
 
 (docs := list(tokenize_documents(raw_docs, tokenize_fun=nlp.tokenize_as_lemmas)))
 #+end_src
@@ -107,8 +107,8 @@ from nlprep import tokenize_documents
 ** Pre-Defined Pipelines
 A collection of common pipelines can be found in the =specs.pipelines= sub-module, and a collection of common NLP steps, implemented in [[https://spacy.io/][spaCy]], can be found in =spacy.props=.
 #+begin_src python
-import nlprep.spacy as nlp
-from nlprep import pipelines
+import its_prep.spacy as nlp
+from its_prep import pipelines
 #+end_src
 
 Next, we apply the =poc_topic_modeling= pipeline, which aims to only extract data that is relevant to the semantic context of the given document. This is done by
@@ -133,7 +133,7 @@ In the =filters= sub-module, we have defined multiple factory functions that sho
 
 We also import the ~apply_filters~ helper function, which is a convenient way to apply a pipeline on a document corpus.
 #+begin_src python
-from nlprep import filters, apply_filters
+from its_prep import filters, apply_filters
 #+end_src
 
 Say we wanted to only return only the verbs in the given documents. This could be achieved through
@@ -194,7 +194,7 @@ list(apply_filters(docs, non_stop_verbs_pipeline + long_sents_pipeline))
 
 Finally, we could return the tokens as word-embeddings:
 #+begin_src python :results replace value verbatim :exports both
-from nlprep import selected_properties
+from its_prep import selected_properties
 processed_docs = apply_filters(docs, non_stop_verbs_pipeline + long_sents_pipeline)
 list(selected_properties(processed_docs, nlp.get_word_vectors))
 #+end_src
@@ -326,32 +326,32 @@ list(selected_properties(processed_docs, nlp.get_word_vectors))
 
 ** Persistent Storage
 
-Because the text analysis part of the =spaCy= module can take a very long time, especially for large corpora, it can be helpful to store the results for later analyses (e.g. re-running the pipeline at a later date, modifying the pipeline, etc.). To do this, the =nlprep.spacy.utils= sub-module offers two helper functions: ~save_caches~ and ~load_caches~.
+Because the text analysis part of the =spaCy= module can take a very long time, especially for large corpora, it can be helpful to store the results for later analyses (e.g. re-running the pipeline at a later date, modifying the pipeline, etc.). To do this, the =its_prep.spacy.utils= sub-module offers two helper functions: ~save_caches~ and ~load_caches~.
 
 With ~save_caches~, we can efficiently store all of the analyzed texts for later use. The optional parameter =file_prefix= lets us more easily identify the automatically created files.
 #+begin_src python
 from pathlib import Path
 # save the caches to /tmp
-nlp.utils.save_caches(Path("/tmp/"), file_prefix="nlprep-demo")
+nlp.utils.save_caches(Path("/tmp/"), file_prefix="its-prep-demo")
 #+end_src
 
 The example above created the following files:
 #+begin_src bash :results replace verbatim :session no :exports both
-ls /tmp | grep "nlprep-demo"
+ls /tmp | grep "its-prep-demo"
 #+end_src
 
 #+RESULTS:
-: nlprep-demo_text_to_doc_cache_docs
-: nlprep-demo_text_to_doc_cache_keys
-: nlprep-demo_tokens_to_doc_cache_docs
-: nlprep-demo_tokens_to_doc_cache_keys
+: its-prep-demo_text_to_doc_cache_docs
+: its-prep-demo_text_to_doc_cache_keys
+: its-prep-demo_tokens_to_doc_cache_docs
+: its-prep-demo_tokens_to_doc_cache_keys
 
 At a later date, we can now load these cached intermediary results through the ~load_caches~ function:
 #+begin_src python
-import nlprep.spacy.props as nlp
+import its_prep.spacy.props as nlp
 from pathlib import Path
 # load the caches from /tmp
-nlp.utils.load_caches(Path("/tmp/"), file_prefix="nlprep-demo")
+nlp.utils.load_caches(Path("/tmp/"), file_prefix="its-prep-demo")
 #+end_src
 
 ** Merging of named entities / noun chunks

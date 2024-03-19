@@ -4,7 +4,7 @@ Core module
 Core functionality
 ------------------
 
-.. automodule:: nlprep.core
+.. automodule:: its_prep.core
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ Core functionality
 Data types
 -------------------
 
-.. automodule:: nlprep.types
+.. automodule:: its_prep.types
    :members:
    :undoc-members:
    :show-inheritance:

@@ -2,8 +2,8 @@ import test.strategies as lanst
 
 from hypothesis import given
 from hypothesis import strategies as st
-from nlprep.core import apply_filters, selected_properties
-from nlprep.types import Document, Filter, Property_Function
+from its_prep.core import apply_filters, selected_properties
+from its_prep.types import Document, Filter, Property_Function
 
 
 @given(st.lists(lanst.documents), st.lists(lanst.filters()))

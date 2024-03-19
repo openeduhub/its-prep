@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Optional
 
 import de_core_news_lg
-from nlprep.types import Document, Property, Property_Function, Split_Function, Tokens
-from nlprep.utils import Spacy_defaultdict
+from its_prep.types import Document, Property, Property_Function, Split_Function, Tokens
+from its_prep.utils import Spacy_defaultdict
 
 import spacy.tokens
 from spacy.language import PipeCallable

@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "nlprep"
+project = "its_prep"
 copyright = "2023, Jonas Opitz"
 author = "Jonas Opitz"
 release = "0.1.2"

@@ -2,10 +2,10 @@ import test.strategies as lanst
 from collections.abc import Collection
 
 import hypothesis.strategies as st
-import nlprep.specs.filters as filters
+import its_prep.specs.filters as filters
 from hypothesis import given
-from nlprep.types import Document, Filter, Property_Function
-from nlprep.utils import nest
+from its_prep.types import Document, Filter, Property_Function
+from its_prep.utils import nest
 
 
 @given(
