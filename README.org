@@ -25,21 +25,22 @@ Include this Flake in the inputs of your Flake:
 #+begin_src nix
 {
   inputs = {
-    its-prep = {
-      url = "github:openeduhub/its-prep";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    its-prep.url = url = "github:openeduhub/its-prep";
   };
 }
 #+end_src
 
-Then, simply include its default package in your Python environment, e.g.
+Then, simply apply the applied ~nixpkgs~ overlay:
 #+begin_src nix
 {
   outputs = { self, nixpkgs, ... }:
     let
-      its-prep = self.inputs.its-prep.packages.default.${system};
-
+      system = "...";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.inputs.its-prep.overlays.default ];
+      };
+      
       python-packages = py-pkgs: [ its-prep ];
       local-python = pkgs.python3.withPackages python-packages;
     in
