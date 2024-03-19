@@ -78,7 +78,7 @@
       overlays.default = (final: prev: {
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (python-final: python-prev: {
-            data-utils = self.outputs.lib.data-utils python-final;
+            its-prep = self.outputs.lib.its-prep python-final;
           })
         ];
       });
