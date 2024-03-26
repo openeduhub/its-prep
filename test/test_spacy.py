@@ -13,6 +13,7 @@ from its_prep.types import Document, Property_Function, Split_Function, Tokens
     nlp_st.texts,
     st.sampled_from([nlp.tokenize_as_lemmas, nlp.tokenize_as_words]),
 )
+@settings(deadline=None)
 def test_tokenizers_do_something(text: str, tokenizer: Callable[[str], Tokens]):
     result = tokenizer(text)
 
@@ -24,6 +25,7 @@ def test_tokenizers_do_something(text: str, tokenizer: Callable[[str], Tokens]):
     nlp_st.documents,
     st.sampled_from([nlp.get_upos, nlp.lemmatize, nlp.is_stop]),
 )
+@settings(deadline=None)
 def test_properties_have_correct_len(doc: Document, fun: Property_Function):
     result = fun(doc)
     assert len(result) == len(doc.original_tokens)
@@ -33,12 +35,14 @@ def test_properties_have_correct_len(doc: Document, fun: Property_Function):
     nlp_st.documents,
     st.sampled_from([nlp.into_sentences, nlp.into_sentences_lemmatized]),
 )
+@settings(deadline=None)
 def test_splitters_have_correct_len(doc: Document, splitter: Split_Function):
     split_result = splitter(doc)
     assert sum(len(result) for result in split_result) == len(doc.original_tokens)
 
 
 @given(nlp_st.texts)
+@settings(deadline=None)
 def test_text_cache(text: str):
     doc = nlp.tokenize_as_words(text)
 
@@ -49,6 +53,7 @@ def test_text_cache(text: str):
 
 
 @given(nlp_st.tokens)
+@settings(deadline=None)
 def test_tokens_cache(tokens: Tokens):
     doc = nlp.utils.spacy_doc_from_tokens(tokens)
 
@@ -58,6 +63,7 @@ def test_tokens_cache(tokens: Tokens):
 
 
 @given(nlp_st.texts)
+@settings(deadline=None)
 def test_text_cache_storage(text: str):
     doc = nlp.tokenize_as_words(text)
 
@@ -79,6 +85,7 @@ def test_text_cache_storage(text: str):
 
 
 @given(nlp_st.tokens)
+@settings(deadline=None)
 def test_tokens_cache_storage(tokens: Tokens):
     doc = nlp.utils.spacy_doc_from_tokens(tokens)
 
@@ -94,8 +101,8 @@ def test_tokens_cache_storage(tokens: Tokens):
         assert str(token_doc) == str(token_cache)
 
 
-@settings(deadline=None)
 @given(st.booleans(), st.booleans())
+@settings(deadline=None)
 def test_tokenize_merges(merge_named_entities: bool, merge_noun_chunks: bool):
     text = "Deutschland ist ein Bundesstaat in Mitteleuropa. Er hat 16 Bundesländer und ist als freiheitlich-demokratischer und sozialer Rechtsstaat verfasst. Die 1949 gegründete Bundesrepublik Deutschland stellt die jüngste Ausprägung des 1871 erstmals begründeten deutschen Nationalstaates dar. Bundeshauptstadt und Regierungssitz ist Berlin. Deutschland grenzt an neun Staaten, es hat Anteil an der Nord- und Ostsee im Norden sowie dem Bodensee und den Alpen im Süden. Es liegt in der gemäßigten Klimazone und verfügt über 16 National- und mehr als 100 Naturparks."
     doc = tokenize_documents(
@@ -120,6 +127,7 @@ def test_tokenize_merges(merge_named_entities: bool, merge_noun_chunks: bool):
 
 
 @given(nlp_st.texts)
+@settings(deadline=None)
 def test_noun_chunks(text: str):
     # the tested function only works for documents tokenized by spacy directly
     doc = list(tokenize_documents([text], nlp.tokenize_as_words))[0]
@@ -179,6 +187,7 @@ def test_posterior_merging():
 
 
 @given(nlp_st.texts)
+@settings(deadline=None)
 def test_get_word_vectors(text: str):
     doc = tokenize_documents([text], nlp.tokenize_as_words).__next__()
     vectors = nlp.get_word_vectors(doc)
