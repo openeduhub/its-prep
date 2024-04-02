@@ -72,9 +72,6 @@
       };
     in
     {
-      lib = {
-        its-prep = its-prep-lib;
-      };
       overlays.default = (final: prev: {
         pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
           (python-final: python-prev: {
