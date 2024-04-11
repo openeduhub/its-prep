@@ -374,3 +374,17 @@ list(tokenize_documents(raw_docs, tokenize_fun=nlp.tokenize_as_words, merge_name
 : ['Deutschland', 'ist', 'ein', 'Bundesstaat', 'in', 'Mitteleuropa', '.', 'Er', 'hat', '16', 'Bundesländer', 'und', 'ist', 'als', 'freiheitlich-demokratischer', 'und', 'sozialer', 'Rechtsstaat', 'verfasst', '.', 'Die', '1949', 'gegründete', 'Bundesrepublik Deutschland', 'stellt', 'die', 'jüngste', 'Ausprägung', 'des', '1871', 'erstmals', 'begründeten', 'deutschen', 'Nationalstaates', 'dar', '.', 'Bundeshauptstadt', 'und', 'Regierungssitz', 'ist', 'Berlin', '.', 'Deutschland', 'grenzt', 'an', 'neun', 'Staaten', ',', 'es', 'hat', 'Anteil', 'an', 'der', 'Nord-', 'und', 'Ostsee', 'im', 'Norden', 'sowie', 'dem', 'Bodensee', 'und', 'den', 'Alpen', 'im', 'Süden', '.', 'Es', 'liegt', 'in', 'der', 'gemäßigten', 'Klimazone', 'und', 'verfügt', 'über', '16', 'National-', 'und', 'mehr', 'als', '100', 'Naturparks', '.']
 : ['Das', 'heutige', 'Deutschland', 'hat', 'circa', '84,4', 'Millionen', 'Einwohner', 'und', 'zählt', 'bei', 'einer', 'Fläche', 'von', '357.588', 'Quadratkilometern', 'mit', 'durchschnittlich', '236', 'Einwohnern', 'pro', 'Quadratkilometer', 'zu', 'den', 'dicht', 'besiedelten', 'Flächenstaaten', '.', 'Die', 'bevölkerungsreichste', 'deutsche', 'Stadt', 'ist', 'Berlin', ';', 'weitere', 'Metropolen', 'mit', 'mehr', 'als', 'einer', 'Million', 'Einwohnern', 'sind', 'Hamburg', ',', 'München', 'und', 'Köln', ';', 'der', 'größte', 'Ballungsraum', 'ist', 'das', 'Ruhrgebiet', '.', 'Frankfurt am Main', 'ist', 'als', 'europäisches', 'Finanzzentrum', 'von', 'globaler', 'Bedeutung', '.', 'Die', 'Geburtenrate', 'liegt', 'bei', '1,58', 'Kindern', 'pro', 'Frau', '(', '2021', ')', '.']
 
+* Potential Future Improvements
+
+1. Create additional filters:
+   - URLs
+   - numbers and years
+   - word-repetitions ([[https://github.com/openeduhub/its-data/blob/4633948957f59a2ce99d65a061fa34ec6f4f0872/its_data/default_pipelines/extra_nlp_filters.py#L5-L41][already implemented in its-data]])
+   - by word length
+   - named entities
+2. Allow for the use of different ~spaCy~ models.
+3. Improve the document caching mechanism, as it is currently a bit unwieldy to use (see [[https://github.com/openeduhub/its-data/blob/4633948957f59a2ce99d65a061fa34ec6f4f0872/its_data/default_pipelines/data.py#L151-L154][load cache]], [[https://github.com/openeduhub/its-data/blob/4633948957f59a2ce99d65a061fa34ec6f4f0872/its_data/default_pipelines/data.py#L165-L166][save cache]]). Additional problems with the current approach:
+   - If the cache is large, the overhead becomes very expensive (an actual database like ~sqlite~ would probably help).
+   - Because the entire cache is stored in-memory, long-running sessions may run into issues.
+4. Split up composite words into smaller pieces (especially relevant for German, e.g. "Hochschulfach" -> "Hochschule" + "Fach").
+5. Use [[https://spacy.io/api/language#pipe][spaCy's Language.pipe]] in order to process batches of documents, as this is more efficient than processing them individually.
