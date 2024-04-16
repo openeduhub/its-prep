@@ -34,4 +34,6 @@ buildPythonPackage {
     pytestCheckHook
     hypothesis
   ];
+  # use the hypothesis profile that is more reproducible
+  pytestFlagsArray = [ "--hypothesis-profile=build" ];
 }
