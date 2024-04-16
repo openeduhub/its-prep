@@ -2,111 +2,40 @@
   description = "Dependency and Build Process for the Text Pre-Processing Pipeline";
 
   inputs = {
+    # track unstable because one of our dependencies, py3langid, is only
+    # available in unstable. change this to nixos-24.05, once that is
+    # available.
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-filter.url = "github:numtide/nix-filter";
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }:
-    let
-      nix-filter = self.inputs.nix-filter.lib;
-
-      ### declare the python packages used for building, docs & development
-      python-packages-build = py-pkgs:
-        with py-pkgs; [
-          numpy
-          # NLP
-          spacy
-          spacy_models.de_core_news_lg
-          # language detection, also used in trafilatura
-          py3langid
-        ];
-
-      python-packages-docs = py-pkgs:
-        with py-pkgs; [
-          sphinx
-          sphinx-rtd-theme
-          sphinx-autodoc-typehints
-        ];
-
-      python-packages-devel = py-pkgs:
-        with py-pkgs; [
-          # coding utilities
-          black
-          flake8
-          isort
-          ipython
-          # type checking
-          mypy
-          # unit tests
-          pytest
-          pytest-cov
-          hypothesis
-          # debugger
-          debugpy
-        ]
-        ++ (python-packages-build py-pkgs)
-        ++ (python-packages-docs py-pkgs);
-
-      ### declare how the python package shall be built
-      its-prep-lib = py-pkgs: py-pkgs.buildPythonPackage rec {
-        pname = "its-prep";
-        version = "0.1.4";
-        # only include the package-related files
-        src = nix-filter {
-          root = self;
-          include = [
-            "its_prep"
-            "test"
-            ./setup.py
-            ./requirements.txt
-          ];
-          exclude = [ (nix-filter.matchExt "pyc") ];
-        };
-        propagatedBuildInputs = (python-packages-build py-pkgs);
-        # use pytestCheckHook to run pytest after building
-        nativeCheckInputs = with py-pkgs; [
-          pytestCheckHook
-          hypothesis
-        ];
-      };
-    in
+  outputs =
     {
-      overlays.default = (final: prev: {
-        pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-          (python-final: python-prev: {
-            its-prep = self.outputs.lib.its-prep python-final;
-          })
-        ];
-      });
-    } // flake-utils.lib.eachDefaultSystem (system:
+      self,
+      nixpkgs,
+      flake-utils,
+      ...
+    }:
+    {
+      overlays = import ./overlays.nix {
+        inherit (nixpkgs) lib;
+        nix-filter = self.inputs.nix-filter.lib;
+      };
+    }
+    // flake-utils.lib.eachDefaultSystem (
+      system:
       let
         # import the packages from nixpkgs
-        pkgs = nixpkgs.legacyPackages.${system};
-        python = pkgs.python3;
+        pkgs = nixpkgs.legacyPackages.${system}.extend self.outputs.overlays.default;
       in
       {
         packages = rec {
           default = its-prep;
-          its-prep = its-prep-lib python.pkgs;
-          docs = pkgs.runCommand "docs"
-            {
-              buildInputs = [
-                (python-packages-docs python.pkgs)
-                (its-prep.override { doCheck = false; })
-              ];
-            }
-            (pkgs.writeShellScript "docs.sh" ''
-              sphinx-build -b html ${./docs} $out
-            '');
+          its-prep = pkgs.python3Packages.its-prep;
+          docs = pkgs.python3Packages.callPackage ./docs.nix { };
         };
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            (python.withPackages python-packages-devel)
-            # python language server
-            pkgs.nodePackages.pyright
-          ];
-        };
+        devShells.default = pkgs.callPackage ./shell.nix { };
       }
     );
 }
