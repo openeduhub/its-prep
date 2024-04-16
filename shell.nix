@@ -12,7 +12,7 @@ mkShell {
         pytest-cov
         hypothesis
         debugpy
-      ] ++ py-pkgs.its-prep.dependencies
+      ] ++ py-pkgs.its-prep.propagatedBuildInputs
     ))
   ];
 }

@@ -23,7 +23,7 @@ buildPythonPackage {
     ];
     exclude = [ (nix-filter.matchExt "pyc") ];
   };
-  dependencies = [
+  propagatedBuildInputs = [
     numpy
     spacy
     spacy_models.de_core_news_lg
